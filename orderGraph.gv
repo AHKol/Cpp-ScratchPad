@@ -1,0 +1,32 @@
+digraph taskgraph { 
+"Biance
+Dell 123"->"DDR 266"
+"Biance
+Dell 123"->"I7"
+"Biance
+Dell 123"->"DDR 266"
+"Biance
+Dell 123"->"Nano"
+"Biance
+Dell 123"->"Power Supply 300 Watt"
+"SaltN Pepa
+HP 345"->"A12"
+"SaltN Pepa
+HP 345"->"DDR 400"
+"SaltN Pepa
+HP 345"->"Geforce 750M"
+"SaltN Pepa
+HP 345"->"DDR 400"
+"SaltN Pepa
+HP 345"->"Power Supply 300 Watt"
+"Brianna
+Acer 567"->"I5"
+"Brianna
+Acer 567"->"Power Supply 200 Watt"
+"Brianna
+Acer 567"->"DDR 266"
+"Brianna
+Acer 567"->"Nano"
+"Brianna
+Acer 567"->"DDR 266"
+}
