@@ -1,0 +1,65 @@
+Chris Tyler
+
+Will work with Open source software
+
+Under GNU licence you can force a bunch of companies for their source code.
+
+Marks:
+Blog
+Quizes, ignore lowest 3.
+Projects
+
+Email for help from the developers
+
+LAB:
+
+Create keys for machines
+Archie, Betty Charlie Xerxies
+
+ssh-keygen 
+//save in default
+//write a passphrase
+//rename the pub to my user name, ahkolodko.pub
+
+Sending Email? 
+Subject = SPO600
+
+ssh ahkolodko@xerxes.cdot.systems
+
+//machine may die at any time, scp to a local directory at end of work
+
+//compliaton can be long, use to open second window
+screen -RaD 
+
+close screen by 
+
+w //list users
+
+To connect to specific machine
+ssh -p 2200 adam@ehlcdot.systems
+
+//or use ssh config file
+
+Host "aarchie"
+	port 2200
+	hostname "ehl.cdot.systems"
+
+BLOG:
+	
+Wordpress/blogger
+
+To add blog to site
+plenet_cdot_feed_list
+
+[my rss feed]
+name = Adam Kolodko
+
+TASKS:
+
+Create Blog
+Optional: Tag is SPO600
+Add blog to planet Cdot
+-Create a Wiki account
+Add my info to Winter 2018 SPO600 Participant table
+Email Prof a private key
+Find 2 different open source communities, (maybe includeOS and Libra Office)

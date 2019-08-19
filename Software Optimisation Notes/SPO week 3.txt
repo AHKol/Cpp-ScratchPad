@@ -1,0 +1,35 @@
+==Machine code==
+Bianary numbers represent
+	Instruction
+	addressing mode
+	arguments
+	
+Instruction varys from cpu to cpu
+
+ARMv8			Cortex A-53
+	AArch64			In order of writen code
+	AArch32		Cortex A-57
+					Can change order of instruction for better speed\
+				Also: A-72, -73, -75, -32, -35
+
+				
+==Makefile==
+target	dependencies
+		recipies
+
+write(1,"Hi"2); 				//write to standard output 2 character Hi
+syscall(__NR_write,1,"Hi"2); 	//well operating system to write Hi
+
+==Assembly==
+.global _start	//dont throw out
+.rodata			//place in read only memory
+
+as -g -o hello.o hello.s 	//to assemble
+
+.data
+msg ascii "loop : ___"
+//take register with index, add 48
+//place in memory after loop string
+//lenght is string + loop
+
+big.LITTLE system:	combined 64+32 bit system

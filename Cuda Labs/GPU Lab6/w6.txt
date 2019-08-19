@@ -1,0 +1,152 @@
+GPU610 Lab 3
+Adam Kolodko
+ahkolodko@myseneca.ca
+
+// Simple Matrix Multiply - Workshop 6
+// w6.cu
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <chrono>
+#include <cuda_runtime.h>
+#include <cstdlib>
+#include "device_launch_parameters.h" // intellisence on CUDA syntax
+
+using namespace std::chrono;
+
+const int ntpb = 32; // number of threads per block
+
+__global__ void firstKernel(const float* d_A, const float* d_B, float* resultM, int n) {
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+	if (i < n && j < n) {
+		float sum = 0.0f;
+		for (int x = 0; x < n; x++) {
+			sum += d_A[i*n + x] * d_B[x*n + j];
+		}
+
+		resultM[i*n + j] = sum;
+	}
+}
+
+// check reports error if any
+void check(const char* msg, const cudaError_t err) {
+	if (err != cudaSuccess)
+		std::cerr << "*** " << msg << ":" << cudaGetErrorString(err) << " ***\n";
+}
+
+// display matrix M, which is stored in row-major order
+void display(const char* str, const float* M, int nr, int nc)
+{
+	std::cout << str << std::endl;
+	std::cout << std::fixed << std::setprecision(4);
+	for (int i = 0; i < nr; i++) {
+		for (int j = 0; j < nc; j++)
+			std::cout << std::setw(10)
+			<< M[i * nc + j];
+		std::cout << std::endl;
+	}
+	std::cout << std::endl;
+}
+
+// report system time
+void reportTime(const char* msg, steady_clock::duration span) {
+	auto ms = duration_cast<milliseconds>(span);
+	std::cout << msg << " - took - " <<
+		ms.count() << " millisecs" << std::endl;
+}
+
+// matrix multiply
+void sgemm(const float* h_a, const float* h_b, float* h_c, int n) {
+
+	int size = n * n * sizeof(float);
+
+	// Calculate number of blocks
+	int nb = (n + ntpb - 1) / ntpb;
+
+	// Matricies variables
+	float* d_A;
+	float* d_B;
+	float* d_C;
+
+	// Memory allocation for DEVICE matricies
+	cudaMalloc((void**)&d_A, size);
+	cudaMalloc((void**)&d_B, size);
+	cudaMalloc((void**)&d_C, size);
+
+	// Copy matricies from HOST to the DEVICE
+	cudaMemcpy(d_A, h_a, size, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_B, h_b, size, cudaMemcpyHostToDevice);
+
+	// launch execution configuration
+	dim3 dGrid(nb, nb);
+	dim3 dBlock(ntpb, ntpb);
+	firstKernel << <dGrid, dBlock >> >(d_A, d_B, d_C, n);
+	cudaDeviceSynchronize();
+
+	// Copy resulting matrix from DEVICE to HOST
+	cudaMemcpy(h_c, d_C, size, cudaMemcpyDeviceToHost);
+
+	// deallocate device memory
+	cudaFree(d_C);
+
+	// reset the device
+	cudaDeviceReset();
+}
+
+int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		std::cerr << argv[0] << ": invalid number of arguments\n";
+		std::cerr << "Usage: " << argv[0] << "  size_of_vector\n";
+		return 1;
+	}
+	int n = std::atoi(argv[1]); // number of rows/columns in h_a, h_b, h_c 
+	std::cout << "Matrix size [" << n << " x " << n << "]\n";
+	steady_clock::time_point ts, te;
+
+	// allocate host memory
+	ts = steady_clock::now();
+	float* h_a = new float[n * n];
+	float* h_b = new float[n * n];
+	float* h_c = new float[n * n];
+
+	// populate host matrices a and b
+	for (int i = 0, kk = 0; i < n; i++)
+		for (int j = 0; j < n; j++, kk++)
+			h_a[kk] = h_b[kk] = (float)kk / (n * n);
+	te = steady_clock::now();
+	reportTime("allocation and initialization", te - ts);
+
+	// h_c = h_a * h_b
+	ts = steady_clock::now();
+	sgemm(h_a, h_b, h_c, n);
+	te = steady_clock::now();
+	reportTime("matrix-matrix multiplication", te - ts);
+
+	// display results
+	if (n <= 5) {
+		display("h_a :", h_a, n, n);
+		display("h_b :", h_b, n, n);
+		display("h_c = h_a h_b :", h_c, n, n);
+	}
+
+	// check correctness
+	std::cout << "correctness test ..." << std::endl;
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < n; j++) {
+			float sum = 0.0f;
+			for (int k = 0; k < n; k++)
+				sum += h_a[i * n + k] * h_b[k * n + j];
+			if (std::abs(h_c[i * n + j] - sum) > 1.0e-3f)
+				std::cout << "[" << i << "," << j << "]" << h_c[i * n + j]
+				<< " != " << sum << std::endl;
+		}
+	std::cout << "done" << std::endl;
+
+	// deallocate host memory
+	delete[] h_a;
+	delete[] h_b;
+	delete[] h_c;
+}

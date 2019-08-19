@@ -1,0 +1,4 @@
+﻿  Triangles.cpp
+c:\users\adam\dropbox\_activeclasses\_gam 531-ssa\lab1\lots_of_squares\firstexample\triangles.cpp(106): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\adam\dropbox\_activeclasses\_gam 531-ssa\lab1\lots_of_squares\firstexample\triangles.cpp(107): warning C4305: '+=': truncation from 'double' to 'float'
+  FirstExample.vcxproj -> C:\Users\Adam\Dropbox\_ActiveClasses\_GAM 531-SSA\Lab1\Lots_Of_Squares\Debug\FirstExample.exe

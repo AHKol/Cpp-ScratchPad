@@ -1,0 +1,8 @@
+to change compalation settings
+./configue 
+
+//combine text file to be larger
+cat file file > output
+//repeate a few times, then get a much larger file
+
+gcc -Q -O2 --help=optimizers|grep -c enabled	//counts ammount of activated optimization

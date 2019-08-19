@@ -1,0 +1,234 @@
+Q1, find run time with n = amount of data on table
+
+==================================================================================================
+update() - if item does not exists so you need to add it as a new record if grow() gets called
+
+bool SimpleTable<TYPE>::update(const string& key, const TYPE& value){
+	int idx=search(key);	//+1
+	if(idx==-1){			//+1
+		if(size_ == max_){	//+1
+			grow();			//evaluate grow
+		}
+		records_[size_++]=new Record(key,value);	//+2
+		sort();				//evaluate sort
+	}
+	else{					//not used
+		records_[idx]->data_=value;	//not used
+	}
+	return true;			//+1
+}
+
+The run time without evaluation other functions is 6 + grow()'s runtime + sort's runtime + search()'s runtime
+
+Grow can be evaluated as 6 + 3n the 3n comes from a for loop that runs for size_, which would give this function an O(n)
+
+Sort can be evaluated as 2 + 7n + n*(n + 4n), a for loop of size n calls another for loop of size n, 
+which would give this function an O(n^2) 
+
+Search is o(n) as it has a for loop of size_
+
+Returning to the grow function, the run time would become 6 + O(n) + O(n) + O(n^2), giving this function an O(n^2)
+
+Evaluating grow
+
+void SimpleTable<TYPE>::grow(){
+	Record** newArray=new Record*[max_*2];	//+1
+	max_=max_*2;							//+2
+	for(int i=0;i<size_;i++){				//+1 +2n
+		newArray[i]=records_[i];			//+n
+	}
+	delete [] records_;						//+1
+	records_=newArray;						//+1
+	else{									//unused
+		records_[idx]->data_=value;			//unused
+	}
+}
+
+Evaluating sort
+
+void SimpleTable<TYPE>::sort(){
+   int minIdx=0;							//+1
+   for(int i=0;i<size_;i++){				//+1 +2n(
+   		minIdx=i;							//+1
+     	for(int j=i+1;j<size_;j++){			//+1 2n(
+     		if(records_[j]->key_ < records_[minIdx]->key_){	//+1
+     			minIdx=j;					//+1
+     		}
+    	}									//end of n
+    	Record* tmp=records_[i];			//+1
+    	records_[i]=records_[minIdx];		//+1
+    	records_[minIdx]=tmp;				//+1
+   }										//)end of n
+}
+
+
+==================================================================================================
+update() - if item does not exists so you need to add it as a new record, without calling grow()
+
+bool SimpleTable<TYPE>::update(const string& key, const TYPE& value){
+	int idx=search(key);							//+1
+	if(idx==-1){									//+1
+		if(size_ == max_){							//+1
+			grow();									//unused
+		}
+		records_[size_++]=new Record(key,value);	//+1
+		sort();										//o(n^2)
+	}
+	else{								
+		records_[idx]->data_=value;					//unused
+	}
+	return true;									//+1
+}
+
+Despite not using grow, this function is calling sort() an O(n^2) function. In this case the dominating term is the n^2 sort
+Thus this function is O(n^2)
+
+==================================================================================================
+update() - if item does exists and you are just modifying what is there
+
+bool SimpleTable<TYPE>::update(const string& key, const TYPE& value){
+	int idx=search(key);
+	if(idx==-1){
+		if(size_ == max_){
+			grow();
+		}
+		records_[size_++]=new Record(key,value);
+		sort();
+	}
+	else{
+		records_[idx]->data_=value;	
+	}
+	return true;
+}
+
+Despite the few lines of code used, the function search() is called, an O(n) function
+This would make this case O(n) 
+
+==================================================================================================
+find() - if item is there
+
+bool SimpleTable<TYPE>::find(const string& key, TYPE& value){
+	int idx=search(key);
+	if(idx==-1)
+		return false;
+	else{
+		value=records_[idx]->data_;
+		return true;
+	}
+}
+
+Search is an O(n) function, without any loops or other function calls this would be an O(n) function
+
+==================================================================================================
+find() - if item is not there
+
+bool SimpleTable<TYPE>::find(const string& key, TYPE& value){
+	int idx=search(key);
+	if(idx==-1)
+		return false;
+	else{
+		value=records_[idx]->data_;
+		return true;
+	}
+}
+
+Identical to before O(n)
+
+==================================================================================================
+remove() - if item is there
+
+bool SimpleTable<TYPE>::remove(const string& key){
+	int idx=search(key);
+	if(idx!=-1){
+		delete records_[idx];
+		for(int i=idx;i<size_-1;i++){
+			records_[i]=records_[i+1];
+		}
+		size_--;
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+Search is o(n), the loop moving the data to fill the hole has no effect on this function O(n)
+
+==================================================================================================
+remove() - if item is not there
+
+bool SimpleTable<TYPE>::remove(const string& key){
+	int idx=search(key);
+	if(idx!=-1){
+		delete records_[idx];
+		for(int i=idx;i<size_-1;i++){
+			records_[i]=records_[i+1];
+		}
+		size_--;
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+Search = O(n), no innef loops or function calls inside a loop to change this
+
+==================================================================================================
+copy constructor
+
+SimpleTable<TYPE>::SimpleTable(const SimpleTable<TYPE>& other){
+	records_=new Record*[other.max_];
+	max_=other.max_;
+	size_=0;
+	for(int i=0;i<other.size_;i++){
+		update(other.records_[i]->key_,other.records_[i]->data_);
+	}
+}
+
+This function contains a loop of size_, and an update that has different runtimes depending on context. In this situation the worst case scenario would take exponentialy longer every time it is used.
+O(n) and log(n) * n^2
+This would mean that the function would be n * (O(n) + (log(n^2))
+O(n^2) + n * log(n^2)
+log(n)^2
+O(n log(n)^2) apears to be valid
+O(n^2) is the dominating term in this situation
+
+==================================================================================================
+assignment operator
+
+const SimpleTable<TYPE>& SimpleTable<TYPE>::operator=(const SimpleTable<TYPE>& other){
+	if(this!=&other){
+		if(records_){
+			int sz=size_;
+			for(int i=0;i<sz;i++){
+				remove(records_[0]->key_);
+			}
+			delete [] records_;
+		}
+		records_=new Record*[other.max_];
+		max_=other.max_;
+		size_=0;
+		for(int i=0;i<other.size_;i++){
+			update(other.records_[i]->key_,other.records_[i]->data_);
+		}
+
+	}
+	return *this;
+}
+
+The worst case in this scenerio would be the for loop calling remove, causing an O(n^2) at least, then a loop of size_ will call Update, this second loop is only log(n^2) because the worst case scenario of update would take longer to happen each time.
+With O(n^2) being larger than a posibe O(log(n^2)), this function would be O(n^2)
+YOU FUCKED UP O^3
+==================================================================================================
+destructor
+
+	if(records_){
+		int sz=size_;
+		for(int i=0;i<sz;i++){
+			remove(records_[0]->key_);
+		}
+		delete [] records_;
+	}
+}
+
+A for loop of size_ is calling remove(), O(n), this would make the destructor o(n^2)

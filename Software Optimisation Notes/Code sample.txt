@@ -1,0 +1,82 @@
+./intern/cycles/kernel/svm/svm_noise.h:227:ccl_device_noinline float perlin(float x, float y, float z)
+./intern/cycles/kernel/svm/svm_noise.h:253:ccl_device_noinline float perlin(float x, float y, float z)
+./intern/cycles/kernel/svm/svm_noise.h:293:/* perlin noise in range 0..1 */
+./intern/cycles/kernel/svm/svm_noise.h:296:	float r = perlin(p.x, p.y, p.z);
+./intern/cycles/kernel/svm/svm_noise.h:300:/* perlin noise in range -1..1 */
+./intern/cycles/kernel/svm/svm_noise.h:303:	return perlin(p.x, p.y, p.z);
+./intern/cycles/kernel/shaders/node_texture.h:96:		f = noise("perlin", p);
+./source/blender/blenlib/intern/noise.c:310:/* for use with BLI_gNoise()/BLI_gTurbulence(), returns unsigned improved perlin noise */
+./source/blender/blenlib/intern/noise.c:1054:/* lerp moved to improved perlin above */
+./release/scripts/addons/render_povray/shading.py:294:    #pov noise_generator 3 means perlin noise
+./release/scripts/templates_osl/noise.osl:15:	Perlin = noise("perlin", Point, Time);
+./release/scripts/modules/bl_i18n_utils/utils_spell_check.py:395:        "perlin",
+
+
+#ifndef __KERNEL_SSE2__
+ccl_device_noinline float perlin(float x, float y, float z)
+{
+        int X; float fx = floorfrac(x, &X);
+        int Y; float fy = floorfrac(y, &Y);
+        int Z; float fz = floorfrac(z, &Z);
+
+        float u = fade(fx);
+        float v = fade(fy);
+        float w = fade(fz);
+
+        float result;
+
+        result = nerp (w, nerp (v, nerp (u, grad (hash (X  , Y  , Z  ), fx       , fy    , fz     ),
+                                                                                grad (hash (X+1, Y  , Z  ), fx-1.0f, fy  , fz     )),
+                                                           nerp (u, grad (hash (X  , Y+1, Z  ), fx       , fy-1.0f, fz    ),
+                                                                                grad (hash (X+1, Y+1, Z  ), fx-1.0f, fy-1.0f, fz          ))),
+                                          nerp (v, nerp (u, grad (hash (X  , Y  , Z+1), fx       , fy    , fz-1.0f ),
+                                                                                grad (hash (X+1, Y  , Z+1), fx-1.0f, fy  , fz-1.0f )),
+                                                           nerp (u, grad (hash (X  , Y+1, Z+1), fx       , fy-1.0f, fz-1.0f ),
+                                                                                grad (hash (X+1, Y+1, Z+1), fx-1.0f, fy-1.0f, fz-1.0f ))));
+        float r = scale3(result);
+
+        /* can happen for big coordinates, things even out to 0.0 then anyway */
+        return (isfinite(r))? r: 0.0f;
+}
+#else
+ccl_device_noinline float perlin(float x, float y, float z)
+{
+        ssef xyz = ssef(x, y, z, 0.0f);
+        ssei XYZ;
+
+        ssef fxyz = floorfrac_sse(xyz, &XYZ);
+
+        ssef uvw = fade_sse(&fxyz);
+        ssef u = shuffle<0>(uvw), v = shuffle<1>(uvw), w = shuffle<2>(uvw);
+
+        ssei XYZ_ofc = XYZ + ssei(1);
+        ssei vdy = shuffle<1, 1, 1, 1>(XYZ, XYZ_ofc);                      // +0, +0, +1, +1
+        ssei vdz = shuffle<0, 2, 0, 2>(shuffle<2, 2, 2, 2>(XYZ, XYZ_ofc)); // +0, +1, +0, +1
+
+        ssei h1 = hash_sse(shuffle<0>(XYZ),     vdy, vdz);               // hash directions 000, 001, 010, 011
+        ssei h2 = hash_sse(shuffle<0>(XYZ_ofc), vdy, vdz);               // hash directions 100, 101, 110, 111
+
+        ssef fxyz_ofc = fxyz - ssef(1.0f);
+        ssef vfy = shuffle<1, 1, 1, 1>(fxyz, fxyz_ofc);
+        ssef vfz = shuffle<0, 2, 0, 2>(shuffle<2, 2, 2, 2>(fxyz, fxyz_ofc));
+
+        ssef g1 = grad_sse(h1, shuffle<0>(fxyz),     vfy, vfz);
+        ssef g2 = grad_sse(h2, shuffle<0>(fxyz_ofc), vfy, vfz);
+        ssef n1 = nerp_sse(u, g1, g2);
+
+        ssef n1_half = shuffle<2, 3, 2, 3>(n1);      // extract 2 floats to a separate vector
+        ssef n2 = nerp_sse(v, n1, n1_half);          // process nerp([a, b, _, _], [c, d, _, _]) -> [a', b', _, _]
+
+        ssef n2_second = shuffle<1>(n2);           // extract b to a separate vector
+        ssef result = nerp_sse(w, n2, n2_second);    // process nerp([a', _, _, _], [b', _, _, _]) -> [a'', _, _, _]
+
+        ssef r = scale3_sse(result);
+
+        ssef infmask = cast(ssei(0x7f800000));
+        ssef rinfmask = ((r & infmask) == infmask).m128; // 0xffffffff if r is inf/-inf/nan else 0
+        ssef rfinite = andnot(rinfmask, r);              // 0 if r is inf/-inf/nan else r
+        return extract<0>(rfinite);
+}
+#endif
+
+

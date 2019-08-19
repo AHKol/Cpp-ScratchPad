@@ -1,0 +1,21 @@
+Flag  Runtime/Seconds
+
+-O2                             3245.36
+
+-fvect-cost-model               3242.05
+-floop-unroll-and-jam           3247.36
+-ftree-partial-pre              3247.84
+-ftree-loop-distribute-patterns 3251.57
+-fsplit-paths                   3252.05
+-floop-interchange              3255.06
+-ftree-slp-vectorize            3255.77
+-ftree-loop-vectorize           3260.45
+-fpredictive-commoning          3266.47
+-fgcse-after-reload             3275.78
+-ftree-loop-distribution        3288.16
+-fpeel-loops                    3283.03
+-fipa-cp-clone                  3283.68  
+-finline-functions              3303.00
+-funswitch-loops                3306.21 
+
+-O3                             3350.36

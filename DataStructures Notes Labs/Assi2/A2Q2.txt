@@ -1,0 +1,5 @@
+3 Suggestions to improve runtime
+
+Copy constructor should not be using update, if you make a simple for loop of size_ copying the elements you would lower the run time to O(n)
+Destuctor should not use remove, a for loop of size_ deleting the elements would lower the runtime to O(n)
+Update can have a run time of O(n) if instead of using grow you had the element inserted in the correct position from the start. Shift the elements after idx and place the element in the empty slot.

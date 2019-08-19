@@ -1,0 +1,17 @@
+﻿kernel.cu.obj : error LNK2019: unresolved external symbol _cudaDeviceSynchronize@0 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cudaGetDevice@4 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cudaFree@4 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cudaMalloc@8 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cudaDeviceReset@0 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cudaMemcpy@16 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cblas_dgemv referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cusolverDnCreate@4 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cusolverDnDestroy@4 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cusolverDnDgetrf_bufferSize@24 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cusolverDnDgetrf@32 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol _cusolverDnDgetrs@40 referenced in function _main
+kernel.cu.obj : error LNK2019: unresolved external symbol ___cudaRegisterFatBinary@4 referenced in function "void __cdecl __nv_cudaEntityRegisterCallback(void * *)" (?__nv_cudaEntityRegisterCallback@@YAXPAPAX@Z)
+kernel.cu.obj : error LNK2019: unresolved external symbol ___cudaUnregisterFatBinary@4 referenced in function "void __cdecl __cudaUnregisterBinaryUtil(void)" (?__cudaUnregisterBinaryUtil@@YAXXZ)
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\x64\cusolver.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\lib\x64\cudart.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+C:\Users\kyuriy\Desktop\Project\LU\Debug\LU.exe : fatal error LNK1120: 14 unresolved externals

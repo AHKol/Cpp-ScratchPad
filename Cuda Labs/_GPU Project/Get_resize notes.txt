@@ -1,0 +1,39 @@
+For loops are abbreviated as 'cimg_forX()'
+Is already CPU parallel in places
+Resize function is large, and  
+
+LINES OF INTEREST
+
+==linear interpolation==
+
+29591: cimg_forX(resx,x) {
+Is data dependent from previous loops
+
+29598: cimg_pragma_openmp(parallel for collapse(3) cimg_openmp_if(resx.size()>=65536))
+Uses parallel library 'openmp'
+
+29603: cimg_forX(resx,x) {
+Inside the parallel loop,
+
+==width==
+
+29624: cimg_forY(resy,y) {
+width mirror of 29591
+
+29630: cimg_pragma_openmp(parallel for collapse(3) cimg_openmp_if(resy.size()>=65536))
+width mirror of 29598
+
+==nearest neighbor interpolation ==
+
+29456: cimg_forC(res,c) {
+is data dependent from pervious
+
+29467: for (unsigned int c = 0; c<sc; ) {
+start of nest
+
+29470: for (unsigned int z = 0; z<sz; ) {
+next nest
+
+29473: for (unsigned int y = 0; y<sy; ) {
+nest ^3
+

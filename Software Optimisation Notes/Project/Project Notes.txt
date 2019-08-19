@@ -1,0 +1,7 @@
+rm gmon.out
+run app
+
+blender -b myblend --render-output /tmp --renderframe 1
+write //linux command to msg
+Top // quet time = 99% down
+Screen -RaD

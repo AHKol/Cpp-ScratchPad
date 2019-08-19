@@ -1,0 +1,138 @@
+SPO Stage 1
+
+Pick some code
+Benchmark
+Make a plan
+
+CPU Intensive is good candidate
+
+Remove code from application into a self contained tester
+
+Look for #ifdef __AARCH64__
+
+make CFLAGS="-g -O2 -pg" //make wth comands
+
+-pg //creates gmod.out
+
+tree show sub directories
+
+gcc -pg
+run
+gprof | gprof2dot | dot =Tps | convert - x.png
+copy from remote to a thing you can see
+
+==networks for programmers==
+0 Host
+1 Virtual Machines
+2 Container
+3 Serverless
+
+rpm -q -f /usr/bin/yelp 	//where is this file from
+rpm -q -l yelp				//all files related to this pakage
+rpm -q --whatrequires yelp	//What applications require this pakage
+rpm -q -requires yelp		//What does this pakage require
+
+Use dnf to install pakages
+
+dnf list myFile
+dnf install myFile
+dnf remove myFile
+
+sudo password myUsername
+//then enter password twice
+
+sudo dnf myInterest
+sudo dnf search myInterest	//will search candidates
+dnf info myInterest			//find url about pakage
+
+git clone url				//use git, need ssh, copy pub key to git options
+
+//format a patch?
+git init
+git add protocols
+git status
+git add services
+git commit -am	"my Message"	//a = all, m = comment
+git log		//show commit string
+git log --oneline	//shorten string
+git format-patch 65bf5bc
+//create patch file, shows differences
+
+patch -p1 <001changes		//add patch
+patch -R -p1 <001changes	//remove patch
+
+git rm protocols
+
+git branch experemental1
+git checkout experemental1
+//do stuff
+git checkout myBranch
+git merge experemental1
+
+#!/bin/bash/usr/bin/gcc -pg $*
+for((x=0;x <5; x++)); do benchmark ; done
+screen -RaD
+for X in {1..5} ; do benchmark; done
+
+==FRIDAY==
+DRAM
+Dynamic, Random, Access, Memory
+SRAM
+Static, RAM
+
+DRAM uses Capacators
+SRAM uses more circitry
+
+DRAM Needs to rewrite to be able to keep storage, called refresh cycle
+
+Random access, Able to read from any point
+
+Address is used to extract desired data
+64bits are returned and then filtered down to desired variable
+
+Use first X ammount of bits to find address of variable
+Last 3 bits of pointer pulls the desired bytes from the 64 bits handed
+
+64bit variable can be split across 2 addresses
+
+SIMD instruction must be alligned on a 64 bit memory boundry
+
+Find if address is aligned it will be divisable by 8, (the last 3 bits would not be used)
+Even number is alligned on a 2 byte boundry
+Last bits bieng 0 determen the allignment of the variable
+
+Find using a 'mask' 111x2, and bit operations 101100x2 & 111x2 == 0;
+
+Phisical Memory and Virtual Memory
+Total Memory and Application's memory
+
+Pages: virtual memory chunks
+Mapping table: "page -> phisical location"
+
+Mapping table is in hardware.
+Operating changes this mapping table.
+
+If the memory is write protected multiple users on a system can access the same phisical memory
+
+If certain application memory is unused, page can be poiting to a placeholder 
+will respond with populating phisical memory with data stored in disk.
+
+If phisical memory is full, will move oldest memory to swapSpace/pagingFile
+Virtual memory can be labled NX not executable or WP working process
+
+strlen() looks for a zero in memory
+In an attempt optimise this you can use SIMD to find the smallest and compare this to '0'
+Problem is you neccesseraly need to go past the zero value
+this is likely to go to another page and access illegal operation
+Solution is to allign the SIMD search to the page end.
+
+Pages are different sizes, some solutions are attempting to prevent memory access from happening
+
+==Order of loops==
+
+while(a==0){};
+return b;
+
+Nothing in the c specification says b has to happen after while
+
+x86_64 does a large amount of cashe syncronisation on it's own

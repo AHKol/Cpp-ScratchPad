@@ -1,0 +1,5 @@
+﻿  Triangles.cpp
+c:\users\adam\dropbox\_activeclasses\_gam 531-ssa\_lab1\lab_one\firstexample\triangles.cpp(52): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+c:\users\adam\dropbox\_activeclasses\_gam 531-ssa\_lab1\lab_one\firstexample\triangles.cpp(52): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+c:\users\adam\dropbox\_activeclasses\_gam 531-ssa\_lab1\lab_one\firstexample\triangles.cpp(144): warning C4305: '+=': truncation from 'double' to 'float'
+  FirstExample.vcxproj -> C:\Users\Adam\Dropbox\_ActiveClasses\_GAM 531-SSA\_Lab1\Lab_One\Debug\FirstExample.exe

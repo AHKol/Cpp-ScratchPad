@@ -1,0 +1,11 @@
+﻿  Triangles.cpp
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(124): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(124): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(223): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(227): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(231): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(235): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(239): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\alireza\downloads\firstexample\firstexample\triangles.cpp(243): warning C4305: '-=': truncation from 'double' to 'float'
+  FirstExample.vcxproj -> C:\Users\Alireza\Downloads\FirstExample\Debug\FirstExample.exe
+  FirstExample.vcxproj -> C:\Users\Alireza\Downloads\FirstExample\Debug\FirstExample.pdb (Full PDB)

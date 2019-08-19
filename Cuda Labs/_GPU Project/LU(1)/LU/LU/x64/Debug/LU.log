@@ -1,0 +1,7 @@
+﻿  Main.cpp
+  LU.vcxproj -> C:\Users\kyuriy\Desktop\LU\x64\Debug\LU.exe
+  LU.vcxproj -> C:\Users\kyuriy\Desktop\LU\x64\Debug\LU.pdb (Full PDB)
+  copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart*.dll" "C:\Users\kyuriy\Desktop\LU\x64\Debug\"
+  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart32_80.dll
+  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart64_80.dll
+          2 file(s) copied.

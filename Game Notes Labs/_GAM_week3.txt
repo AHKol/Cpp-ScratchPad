@@ -1,0 +1,16 @@
+//to scale
+model_view = glm::scale(model_view, glm::vec3(0.25, 0.25, 1.0));
+
+//input commands
+void keyboardFoo(unsigned char key, int x, int y){ //keyboard press, xy mouse location
+	if(key == 'a'){
+		alpha += 0.1;
+	}
+	if(key == 'b'){
+		alpha -= 0.1;
+	}
+{ 
+void mouse(int state, int button, int x, int y){
+
+//inside main
+glutKeyboardFunc(keyboardFoo);

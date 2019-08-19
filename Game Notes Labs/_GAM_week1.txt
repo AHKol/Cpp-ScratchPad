@@ -1,0 +1,53 @@
+Prof: ALI
+
+Path:
+Basics of 3D graphics
+Intro 3d programming, C++
+OpenGL
+Game Engine
+
+Game:
+Game Design: Story, appearance, controls, (deliverables)
+Game Content Creator: Use 3d modeling software to create animations/models
+Game Programing: Code behavior of objects in game
+
+The game engine is a tool to aid the Game Programing aspect. (Unity Unreal)
+
+Tools for us:
+Visual Studio C++
+3D Graphics (OpenGL/DirectX) We use OpenGL
+Understanding of 3D
+
+3D graphics
+
+You have 3d Model
+->
+MATHS!
+->
+2d projection
+
+Why Graphics Improved:
+Hardware ->
+Software 1.2 -> 4.8
+1992:
+Fixed Pipeline(old) -> programming pipeline (modern)
+
+Textures are overlaid onto the polygon
+
+Veracities are sent to GPU then pushed to monitor
+
+Structure of a openGL program
+-Event driven program
+
+Display()
+//drawing
+keyboard()
+//handles events from keyboard
+mouse()
+//handles events from mouse
+XXX()
+//
+
+Need to use these function names, openGL looks for them to function. 
+Can rename through the glutDisplayFunc(my__display); function
+

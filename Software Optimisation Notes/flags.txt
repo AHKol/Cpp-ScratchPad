@@ -1,0 +1,125 @@
+rpmbuild -ba //buildall -myFile
+
+//how to make mock enviroment
+sudo usermod -aG mock ...
+mock source rpm
+
+rpm -i blender.src.rpm
+
+./blender -b ~/blend_cat/fishy_cat.blend -o ~/out.png -f 1
+
+
+%cmake .. \
+%ifnarch %{ix86} x86_64
+    -DWITH_RAYOPTIMIZATION=OFF \
+%endif
+    -DBOOST_ROOT=%{_prefix} \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_SKIP_RPATH=ON \
+    -DPYTHON_VERSION=$(%{__python3} -c "import sys ; print(sys.version[:3])") \
+    -DWITH_ALEMBIC=ON \
+    -DWITH_BUILDINFO=ON \
+    %{?_with_ffmpeg:-DWITH_CODEC_FFMPEG=ON} \
+    -DWITH_CODEC_SNDFILE=ON \
+    -DWITH_CXX_GUARDEDALLOC=OFF \
+    -DWITH_CYCLES=%{cyclesflag} \
+    -DWITH_DOC_MANPAGE=ON \
+    -DWITH_FFTW3=ON \
+    -DWITH_GAMEENGINE=ON \
+    -DWITH_IMAGE_OPENJPEG=ON \
+    -DWITH_INPUT_NDOF=ON \
+    -DWITH_INSTALL_PORTABLE=OFF \
+    -DWITH_JACK=ON \
+    -DWITH_MEM_JEMALLOC=ON \
+    -DWITH_MOD_OCEANSIM=ON \
+    -DWITH_OPENCOLLADA=ON \
+    -DWITH_OPENCOLORIO=ON \
+    -DWITH_OPENVDB=ON \
+    -DWITH_OPENVDB_BLOSC=ON \
+    -DWITH_PLAYER=ON \
+    -DWITH_PYTHON=ON \
+    -DWITH_PYTHON_INSTALL=OFF \
+    -DWITH_PYTHON_INSTALL_REQUESTS=OFF \
+    -DWITH_PYTHON_SAFETY=ON \
+    -DWITH_SDL=ON \
+    -DWITH_SYSTEM_LZO=ON \
+    -DWITH_SYSTEM_OPENJPEG=ON
+
+
+
+%cmake .. \
+%ifnarch %{ix86} x86_64
+    -DWITH_RAYOPTIMIZATION=OFF \
+%endif
+    -CXX_FLAGS=-pg \
+    -C_FLAGS=-pg \
+    -DBOOST_ROOT=%{_prefix} \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_SKIP_RPATH=ON \
+    -DPYTHON_VERSION=$(%{__python3} -c "import sys ; print(sys.version[:3])") \
+    -DWITH_ALEMBIC=ON \
+    -DWITH_BUILDINFO=ON \
+    %{?_with_ffmpeg:-DWITH_CODEC_FFMPEG=ON} \
+    -DWITH_CODEC_SNDFILE=ON \
+    -DWITH_CXX_GUARDEDALLOC=OFF \
+    -DWITH_CYCLES=%{cyclesflag} \
+    -DWITH_DOC_MANPAGE=ON \
+    -DWITH_FFTW3=ON \
+    -DWITH_GAMEENGINE=ON \
+    -DWITH_IMAGE_OPENJPEG=ON \
+    -DWITH_INPUT_NDOF=ON \
+    -DWITH_INSTALL_PORTABLE=OFF \
+    -DWITH_JACK=ON \
+    -DWITH_MEM_JEMALLOC=ON \
+    -DWITH_MOD_OCEANSIM=ON \
+    -DWITH_OPENCOLLADA=ON \
+    -DWITH_OPENCOLORIO=ON \
+    -DWITH_OPENVDB=ON \
+    -DWITH_OPENVDB_BLOSC=ON \
+    -DWITH_PLAYER=ON \
+    -DWITH_PYTHON=ON \
+    -DWITH_PYTHON_INSTALL=OFF \
+    -DWITH_PYTHON_INSTALL_REQUESTS=OFF \
+    -DWITH_PYTHON_SAFETY=ON \
+    -DWITH_SDL=ON \
+    -DWITH_SYSTEM_LZO=ON \
+    -DWITH_SYSTEM_OPENJPEG=ON
+
+export CXXFLAGS="$CXXFLAGS -pg"
+export CFLAGS="$CFLAGS -pg"
+%cmake .. \
+%ifnarch %{ix86} x86_64
+    -DWITH_RAYOPTIMIZATION=OFF \
+%endif
+    -DBOOST_ROOT=%{_prefix} \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_SKIP_RPATH=ON \
+    -DPYTHON_VERSION=$(%{__python3} -c "import sys ; print(sys.version[:3])") \
+    -DWITH_ALEMBIC=ON \
+    -DWITH_BUILDINFO=ON \
+    %{?_with_ffmpeg:-DWITH_CODEC_FFMPEG=ON} \
+    -DWITH_CODEC_SNDFILE=ON \
+    -DWITH_CXX_GUARDEDALLOC=OFF \
+    -DWITH_CYCLES=%{cyclesflag} \
+    -DWITH_DOC_MANPAGE=ON \
+    -DWITH_FFTW3=ON \
+    -DWITH_GAMEENGINE=ON \
+    -DWITH_IMAGE_OPENJPEG=ON \
+    -DWITH_INPUT_NDOF=ON \
+    -DWITH_INSTALL_PORTABLE=OFF \
+    -DWITH_JACK=ON \
+    -DWITH_MEM_JEMALLOC=ON \
+    -DWITH_MOD_OCEANSIM=ON \
+    -DWITH_OPENCOLLADA=ON \
+    -DWITH_OPENCOLORIO=ON \
+    -DWITH_OPENVDB=ON \
+    -DWITH_OPENVDB_BLOSC=ON \
+    -DWITH_PLAYER=ON \
+    -DWITH_PYTHON=ON \
+    -DWITH_PYTHON_INSTALL=OFF \
+    -DWITH_PYTHON_INSTALL_REQUESTS=OFF \
+    -DWITH_PYTHON_SAFETY=ON \
+    -DWITH_SDL=ON \
+    -DWITH_SYSTEM_LZO=ON \
+
+

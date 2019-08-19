@@ -1,0 +1,54 @@
+Fixed point decemel
+1010. 1  0   1   0
+8421.1/2 1/4 1/8 1/16
+
+Floating Point
+Exponent and shift
+
+Characters are forward compatable
+ASCII 2^7
+ISO 8859-1 2^8
+Basic Multilingual pane, BMP (practical almost every char) 2^17
+Unicode (every char) 2^32
+
+UTF-8 (Unicode Transfer Format): Write Ascii, Else write escape code and unicode
+
+Break wave down to fractons(sample rate) 44.1/44.4 K signed 16-bit integer
+Uncompressed: 2 bytes x 44.1k/sec x 2
+128kbps standard commpression
+
+Colour is pixed of 8*8*8 bit RGB
+24bit colour 16million, higher in more intense situations
+
+64bit machine
+CPU requests memory address from machine, receve a word (64bits) and extract relevant data
+If larger than word, CPU must perform 4 operations to make data useable
+==Therefor alighn data in memory for speed==
+
+I/O is a position in memory and changes based on imput, contain connection called interupts
+
+Inside CPU
+registers: Stores Value, Program counter, General purpous register, Status Register
+Fetch: Retreve data
+Decode: Understand data and instruct processing
+Processing: Uses ISA, Instruction Set Architecture.
+
+Architecture information, Width 32,64. Registers, how much temporary memory
+
+>file myApp
+show file detail
+
+objdump -d myApp
+Show assembly inside file
+
+==LAB==
+
+4 Stages of compile
+1. Preprocessing: Add 800 lines of function deffinitons, type DEFs, caused by #include 
+2. Compilation, convert to assembly, close to machine code.
+3. Assembly, turn assemply to machine code
+4. Linking, connecting libraries to current.
+
+Standard function is inside GNU Public library
+Dynamically linked application will get function from individual libraries at runtime
+Statically linked the whole function is added to the code

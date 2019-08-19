@@ -1,0 +1,180 @@
+Dont understand why I dont see simd
+Was only using O2 optimisation at first
+looking as what can be done better
+
+Vector is inside a function, maybe that's the problem?
+
+Nope, still a problem, will try adding shorts instead
+Nope.
+
+I missunderstoon, simd is Single Instruction Multiple Data. Not the instruction itself
+
+Lets go back to the older code and see what the instructions do
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void vectorAdd(int input1[], int input2[], int output[]){
+  for(int i = 0; i < 1000; i++){
+    output[i] = input1[i] + input2[i];
+  }
+}
+
+int main(void){
+  int arr1[1000];
+  int arr2[1000];
+  int sum[1000];
+  int out = 0;
+  srand(time(NULL));
+  for(int i = 0; i < 1000; i++){
+    arr1[i] = rand() % 1000;
+    arr2[i] = rand() % 1000;
+  }
+  vectorAdd(arr1, arr2, sum);
+  for(int i = 0; i < 1000; i++){
+    out += sum[i];
+  }
+  printf("Output: %d \n", out % 1000);
+  return 0;
+}
+
+Looking at just the main dump. The vector add was inlined
+
+0000000000400560 <main>:
+  400560:       d282f610        mov     x16, #0x17b0                    // #6064
+  400564:       cb3063ff        sub     sp, sp, x16
+  400568:       d2800000        mov     x0, #0x0                        // #0
+  40056c:       a9007bfd        stp     x29, x30, [sp]
+  400570:       910003fd        mov     x29, sp
+  400574:       a90153f3        stp     x19, x20, [sp, #16]
+  400578:       5290a3f4        mov     w20, #0x851f                    // #34079
+  40057c:       a9025bf5        stp     x21, x22, [sp, #32]
+  400580:       72aa3d74        movk    w20, #0x51eb, lsl #16			
+  400584:       f9001bf7        str     x23, [sp, #48]
+  400588:       910103b5        add     x21, x29, #0x40
+  40058c:       912043b6        add     x22, x29, #0x810
+  400590:       52800c93        mov     w19, #0x64                      // #100
+  400594:       d2800017        mov     x23, #0x0                       // #0
+  400598:       97ffffd6        bl      4004f0 <time@plt>
+  40059c:       97ffffe9        bl      400540 <srand@plt>
+  4005a0:       97ffffdc        bl      400510 <rand@plt>
+  4005a4:       9b347c01        smull   x1, w0, w20						
+  4005a8:       9365fc21        asr     x1, x1, #37
+  4005ac:       4b807c21        sub     w1, w1, w0, asr #31
+  4005b0:       1b138020        msub    w0, w1, w19, w0					
+  4005b4:       78376aa0        strh    w0, [x21, x23]					
+  4005b8:       97ffffd6        bl      400510 <rand@plt>				/*Last instance of rand, the addition is below*/
+  4005bc:       9b347c01        smull   x1, w0, w20						/*smull*/
+  4005c0:       9365fc21        asr     x1, x1, #37						/*asr*/
+  4005c4:       4b807c21        sub     w1, w1, w0, asr #31
+  4005c8:       1b138020        msub    w0, w1, w19, w0					/*msub*/
+  4005cc:       78376ac0        strh    w0, [x22, x23]					/*strh*/
+  4005d0:       91000af7        add     x23, x23, #0x2
+  4005d4:       f11f42ff        cmp     x23, #0x7d0
+  4005d8:       54fffe41        b.ne    4005a0 <main+0x40>  // b.any
+  4005dc:       913f83a0        add     x0, x29, #0xfe0
+  4005e0:       d2800001        mov     x1, #0x0                        // #0
+  4005e4:       3ce16ac0        ldr     q0, [x22, x1]					/*ldr*/
+  4005e8:       3ce16aa1        ldr     q1, [x21, x1]
+  4005ec:       4e618400        add     v0.8h, v0.8h, v1.8h				/*PARRALEL*/
+  4005f0:       3ca16800        str     q0, [x0, x1]
+  4005f4:       91004021        add     x1, x1, #0x10
+  4005f8:       f11f403f        cmp     x1, #0x7d0
+  4005fc:       54ffff41        b.ne    4005e4 <main+0x84>  // b.any
+  400600:       d282f601        mov     x1, #0x17b0                     // #6064
+  400604:       8b0103a3        add     x3, x29, x1
+  400608:       52800001        mov     w1, #0x0                        // #0
+  40060c:       78402402        ldrh    w2, [x0], #2					/*ldrh*/
+  400610:       0b020021        add     w1, w1, w2
+  400614:       eb00007f        cmp     x3, x0
+  400618:       13003c21        sxth    w1, w1							/*sxth*/
+  40061c:       54ffff81        b.ne    40060c <main+0xac>  // b.any
+  400620:       5290a3e2        mov     w2, #0x851f                     // #34079
+  400624:       52800c83        mov     w3, #0x64                       // #100
+  400628:       72aa3d62        movk    w2, #0x51eb, lsl #16			/*movk*/
+  40062c:       90000000        adrp    x0, 400000 <_init-0x4b8>		/*adrp*/
+  400630:       9120c000        add     x0, x0, #0x830
+  400634:       9b227c22        smull   x2, w1, w2						/*smull*/
+  400638:       9365fc42        asr     x2, x2, #37						/*asr*/
+  40063c:       4b817c42        sub     w2, w2, w1, asr #31
+  400640:       1b038441        msub    w1, w2, w3, w1
+  400644:       13003c21        sxth    w1, w1
+  400648:       97ffffc2        bl      400550 <printf@plt>				/*print happens affter addition, look above*/
+  40064c:       a9407bfd        ldp     x29, x30, [sp]
+  400650:       52800000        mov     w0, #0x0                        // #0
+  400654:       a94153f3        ldp     x19, x20, [sp, #16]
+  400658:       d282f610        mov     x16, #0x17b0                    // #6064
+  40065c:       a9425bf5        ldp     x21, x22, [sp, #32]
+  400660:       f9401bf7        ldr     x23, [sp, #48]
+  400664:       8b3063ff        add     sp, sp, x16
+  400668:       d65f03c0        ret
+  40066c:       00000000        .inst   0x00000000 ; undefined
+  
+  methodology, 
+  Im not going to be able to keep my sanity by trying to keep track of registers, so I will just look at the instructions and look closer once something interesting shows up
+  None of these instructions are simd
+  
+  Looking at the lab notes again, there are links to help
+  
+  I should have not been looking at instructions, 
+  add     v0.8h, v0.8h, v1.8h
+
+  No fancy calls, just vectors as the data
+  So now we have proof of at least some parralel operation
+  This add instructions seems to be using register 0 and adding register1, putting the contents into 0
+  The .8 will devide that register to 8 bit segments
+  
+  This isn't big enough to get through the 1000 numbers, to finish up how this programs we would need to find where the loop exits.
+  We can assume the rest of the code is to arrange the data in a way that can be witten and read in paralel
+  
+  add     x23, x23, #0x2
+  cmp     x23, #0x7d0
+  b.ne    4005a0 <main+0x40>
+  
+  increment x23 by 2
+  0x7d0 is hex for 2000, so x23 is part of the random number generation loop
+  main+64, line 64 of main? That would be past ret and inside undefined
+  
+  So the section of the code that is perfroming the addition is here
+  
+  //x29 is from outside of main. 0xfe0 is 4064 but more interestingly it is 111111100000 bianary
+  //not sure why
+  4005dc:       913f83a0        add     x0, x29, #0xfe0
+  //set x1 to 0, index?
+  4005e0:       d2800001        mov     x1, #0x0                        // #0
+  //load into register a quad word of x22 and x1 (1)?
+  //It's loading up the ellements from the array
+  4005e4:       3ce16ac0        ldr     q0, [x22, x1]					/*ldr*/
+  4005e8:       3ce16aa1        ldr     q1, [x21, x1]
+  //add them up
+  4005ec:       4e618400        add     v0.8h, v0.8h, v1.8h				/*PARRALEL*/
+  //store them
+  4005f0:       3ca16800        str     q0, [x0, x1]
+  //increment
+  4005f4:       91004021        add     x1, x1, #0x10
+  //and check if it is at the end
+  4005f8:       f11f403f        cmp     x1, #0x7d0
+  //jump somewhere outside of main back into start
+  4005fc:       54ffff41        b.ne    4005e4 <main+0x84>  // b.any
+  400600:       d282f601        mov     x1, #0x17b0                     // #6064
+  400604:       8b0103a3        add     x3, x29, x1
+  400608:       52800001        mov     w1, #0x0                        // #0
+  40060c:       78402402        ldrh    w2, [x0], #2					/*ldrh*/
+  400610:       0b020021        add     w1, w1, w2
+  400614:       eb00007f        cmp     x3, x0
+  400618:       13003c21        sxth    w1, w1							/*sxth*/
+  40061c:       54ffff81        b.ne    40060c <main+0xac>  // b.any
+  400620:       5290a3e2        mov     w2, #0x851f                     // #34079
+  400624:       52800c83        mov     w3, #0x64                       // #100
+  400628:       72aa3d62        movk    w2, #0x51eb, lsl #16			/*movk*/
+  40062c:       90000000        adrp    x0, 400000 <_init-0x4b8>		/*adrp*/
+  400630:       9120c000        add     x0, x0, #0x830
+  400634:       9b227c22        smull   x2, w1, w2						/*smull*/
+  400638:       9365fc42        asr     x2, x2, #37						/*asr*/
+  40063c:       4b817c42        sub     w2, w2, w1, asr #31
+  400640:       1b038441        msub    w1, w2, w3, w1
+  400644:       13003c21        sxth    w1, w1
+
+  //somewhere this outside of main it has to call back into the start of the loop
+  

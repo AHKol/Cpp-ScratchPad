@@ -1,0 +1,84 @@
+1. Added -static: File larger by 600kB, no libc calls in header
+2. No -fno-builtin: New funciton uses puts instead of printf, compiler seems to allow a more efficient function to replace printf
+3. Remove -g: New executable is 3kB smaller. //check why not any different
+4. Add arguments to printf: Main adds a mov w1, #0x1 value before function call, same legth executable
+5. Place printf inside function output: A header with <output added> function <printf@plt>
+6. 
+
+==draft==
+As part of an introduction to assembly language, SPO's week 2 lab involved practicing reading the contents of 'Objdump' command. A hello world c application was compiled on an AArm64 machine with different options enabled and disabled.
+
+#include <stdio.h>
+
+int main() {
+    printf("Hello World!\n");
+}
+
+hello 
+gcc -g -O0 -fno-builtin
+
+1. added -static: File larger by 600kB, instead of the origional <printf@plt> the compilation with -static has a written function called <_IO_printf>, this means that instead of going to the standard library for the function, this app has the funciton written in the application itself.
+
+Origional
+   printf("Hello World!\n");
+  40059c:       90000000        adrp    x0, 400000 <_init-0x418>
+  4005a0:       9119c000        add     x0, x0, #0x670
+  4005a4:       97ffffb7        bl      400480 <printf@plt>
+
+With -static
+   printf("Hello World!\n");
+  400494:       90000320        adrp    x0, 464000 <free_mem+0x88>
+  400498:       911f0000        add     x0, x0, #0x7c0
+  40049c:       94002d63        bl      40ba28 <_IO_printf>
+
+2. No -fno-builtin: New funciton uses puts instead of printf, compiler allows a more efficient function to replace printf
+
+Without -fno-builtin
+   printf("Hello World!\n");
+  40059c:       90000000        adrp    x0, 400000 <_init-0x418>
+  4005a0:       9119c000        add     x0, x0, #0x670
+  4005a4:       97ffffb7        bl      400480 <puts@plt>
+
+3. Remove -g: New executable is removes 3kB of debug information, analizing this is difficult as it's only visible with summary information.
+
+With -g option
+Contents of section .debug_aranges:
+ 0000 2c000000 02000000 00000800 00000000  ,...............
+ 0010 94054000 00000000 20000000 00000000  ..@..... .......
+ 0020 00000000 00000000 00000000 00000000  ................
+Contents of section .debug_info:
+ 0000 16030000 04000000 00000801 ee000000  ................
+ 0010 0c6c0200 00770000 00940540 00000000  .l...w.....@....
+ 0020 00200000 00000000 00000000 00023800  . ............8.
+ 0030 000002d8 38000000 030807d0 01000003  ....8...........
+
+4. Add arguments to printf: print f was rewriten to have 'int 1' printed. The assembly shows that the w1 register was given the value of 1 before running the print function.
+
+   printf("Hello World! %d\n", 1);
+  40059c:       90000000        adrp    x0, 400000 <_init-0x418>
+  4005a0:       9119c000        add     x0, x0, #0x670
+  4005a4:       52800021        mov     w1, #0x1                        // #1
+  4005a8:       97ffffb6        bl      400480 <printf@plt>
+  
+5. Place printf inside the function output: You can see that an <output> function is placed before <main>. You see in <main> that output is referenced by location in memory, 400594 in this case. Im also interested in the specifics of what is happening in the first two lines for both <main> and <output>.
+
+0000000000400594 <output>:
+#include <stdio.h>
+
+void output() {
+  400594:       a9bf7bfd        stp     x29, x30, [sp, #-16]!
+  400598:       910003fd        mov     x29, sp
+   printf("Hello World!");
+  40059c:       90000000        adrp    x0, 400000 <_init-0x418>
+  4005a0:       911a2000        add     x0, x0, #0x688
+  4005a4:       97ffffb7        bl      400480 <printf@plt>
+
+  ...
+  
+  00000000004005b4 <main>:
+
+int main(){
+  4005b4:       a9bf7bfd        stp     x29, x30, [sp, #-16]!
+  4005b8:       910003fd        mov     x29, sp
+   output();
+  4005bc:       97fffff6        bl      400594 <output>

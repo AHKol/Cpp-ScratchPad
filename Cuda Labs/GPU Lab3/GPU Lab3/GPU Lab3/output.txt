@@ -1,0 +1,5 @@
+Name:                GeForce GTX 980
+Compute Capability:  16.1215500
+Total Global Memory: 4294967296
+
+Device with compute capability 6.0 found (index 0)

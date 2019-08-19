@@ -1,0 +1,4 @@
+initialization - took - 424 millisecs
+magnitude calculation - took - 524 millisecs
+Magnitude : 1790281418539008.0000
+Press any key to continue . . .

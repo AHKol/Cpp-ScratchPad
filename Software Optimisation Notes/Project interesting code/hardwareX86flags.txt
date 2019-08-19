@@ -1,0 +1,6 @@
+SSE
+MMX
+AMD64
+IA32
+AI64
+MD5deip

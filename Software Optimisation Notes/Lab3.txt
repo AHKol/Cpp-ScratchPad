@@ -1,0 +1,125 @@
+How fast does a variable get trampled? Test the limmits of the temp registers
+-very quickly it seems
+-nope, i was typing eax instead of rax
+
+as -o loop3.o loop3.s ; ld -o loop3 loop3.o
+
+Operand missmatch for div?
+I was using the wrong order and instant operand
+
+I fucked this up, i was thinking about this as if it was fucntions
+***
+.text
+.globl    _start
+
+start = 0                       /* starting value for the loop index; note that this is a symbol (constant), not a variable */
+max = 15                        /* loop exits when the index hits this number (loop condition is i<max) */
+
+_start:
+  mov     $start,%r15         /* loop index */
+
+loop:
+  /* ... body of the loop ... do something useful here ... */
+
+  mov     $len,%rdx           /*message length*/
+  mov     $msg,%rsi           /*message location*/
+  mov     %r15,%r13           /*r13 = index*/
+  add     $'0',%r13           /*r13 = acii number of index*/
+  mov     %r13b,msg+6         /*Print symbol into memory`*/
+  mov     $1,%rax             /* stdout for syscall  */
+  syscall
+
+  inc     %r15                /* increment index */
+  cmp     $max,%r15           /* see if we're done */
+  jne     loop                /* loop if we're not */
+
+  mov     $0,%rdi             /* exit status */
+  mov     $60,%rax            /* syscall sys_exit */
+  syscall
+
+tenscheck:
+  mov     %r15,%rax           /*ready division*/
+  mov     $0,%rdx
+  mov     $10,%r12
+  div     %r12                 /*divide by tens*/
+  mov     %rax,%r13           /*copy digit r13*/
+  cmp     $0,%r13             /*if value above 10 exist*/
+  jl      addtens             /*add tenth digit to message*/
+  jmp     loop                /*else go back to loop*/
+
+addtens:
+
+  add     $'0',%r13           /*turn r13 into char of digit*/
+  mov     %r13b,msg+5         /*add digit to message*/
+  jmp     loop
+
+.data                           /*Prevent segmentation fault*/
+msg: .ascii     "Loop :  \n"
+.set len, . - msg
+***
+
+Does the code bypass labels?
+-I think so
+
+[ahkolodko@xerxes lab3]$ ./loop4
+LLoLooLoopLoop Loop :Loop :7Loop :8 Loop :9
+LLoLooLoop[ahkolodko@xerxes lab3]$
+
+Something went wrong, and I have no idea what
+
+***
+
+[ahkolodko@xerxes lab3]$ as -o loop4.o loop4.s ; ld -o loop4 loop4.o
+[ahkolodko@xerxes lab3]$ ./loop4
+Loop :0
+Loop :1
+Loop :2
+Loop :3
+Loop :4
+Loop :5
+Loop :6
+Loop :7
+Loop :8
+Loop :9
+Loop 1:
+Loop 1;
+Loop 1<
+Loop 1=
+Loop 1>
+
+***
+
+Good progress almost solved it, looks like the first digit needs to roll back to 1
+
+as -o loop4.o loop4.s ; ld -o loop4 loop4.o
+
+[ahkolodko@xerxes lab3]$ ./loop4
+Loop : 0
+Loop : 1
+Loop : 2
+Loop : 3
+Loop : 4
+Loop : 5
+Loop : 6
+Loop : 7
+Loop : 8
+Loop : 9
+Loop :10
+Loop :11
+Loop :12
+Loop :13
+Loop :14
+
+solved
+
+Time for aarch64========================================
+this looks like it will be a simple port
+
+test the hello world
+as -o loop1.o loop1.s ; ld -o loop1 loop1.o; ./loop1
+
+seems to be safe to use temporary values as long as it's in the same call
+
+Ive been doing this for a few hours, I want to kill myself
+
+Ok no more compilation error, just segmentation faults

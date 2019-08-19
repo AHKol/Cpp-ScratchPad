@@ -1,0 +1,24 @@
+Loading multiple objects
+
+Method 1
+
+Buffer for each object, with pointers to each aspect in buffer
+Contiguous: Vertices's | Texture Data | Names
+
+Vertex Array
+v0 v1 v2 v3 v4 v5 v6 v7
+
+texture Array
+T0 T1 T2 T3 T4 T5 T6 T7 T8 T9 T10
+
+faces
+
+f1: v0 v1 v2 v3
+f2: v2 v1 v5 v6
+f3: v4/t8 v5/t9 v6/t10 v7/t11
+
+//code
+glDrawElements(~~,~~,(v0,v1,v2,v3));
+glDrawElements(~~,~~,(v4,v5,v6,v7));
+glDrawElements(~~,~~,(v1,v2,v6,v5));
+

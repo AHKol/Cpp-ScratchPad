@@ -1,0 +1,120 @@
+//to create directory to work with
+rpmbuild -ba //buildall myFile
+
+//how to make mock enviroment
+sudo usermod -aG mock ...
+mock myApp.src.rpm
+
+rpm -i blender.src.rpm
+
+?
+warning: user mockbuild does not exist - using root
+?
+found directory to /root/
+
+crash
+
+cd /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ahkolodko/rpmbuild/BUILD/blender-2.79 /home/ahkolodko/rpmbuild/BUILD/blender-2.79/source/creator /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/source/creator /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/source/creator/CMakeFiles/blender_man_page.dir/DependInfo.cmake --color=
+Scanning dependencies of target blender_man_page
+make[2]: Leaving directory '/home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make'
+/usr/bin/make -f source/creator/CMakeFiles/blender_man_page.dir/build.make source/creator/CMakeFiles/blender_man_page.dir/build
+make[2]: Entering directory '/home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make'
+cd /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/source/creator && ../../../doc/manpage/blender.1.py /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/bin/blender /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/source/creator/blender.1
+  executing: /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/bin/blender --help
+Traceback (most recent call last):
+  File "../../../doc/manpage/blender.1.py", line 54, in <module>
+    blender_help = subprocess.check_output(cmd).decode(encoding="utf-8")
+  File "/usr/lib64/python3.6/subprocess.py", line 336, in check_output
+    **kwargs).stdout
+  File "/usr/lib64/python3.6/subprocess.py", line 418, in run
+    output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/bin/blender', '--help']' died with <Signals.SIGSEGV: 11>.
+make[2]: *** [source/creator/CMakeFiles/blender_man_page.dir/build.make:60: source/creator/CMakeFiles/blender_man_page] Error 1
+make[2]: Leaving directory '/home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make'
+make[1]: *** [CMakeFiles/Makefile2:7417: source/creator/CMakeFiles/blender_man_page.dir/all] Error 2
+make: *** [Makefile:166: all] Error 2
+error: Bad exit status from /var/tmp/rpm-tmp.28NBY4 (%build)
+
+
+RPM build errors:
+    Bad exit status from /var/tmp/rpm-tmp.28NBY4 (%build)
+[ahkolodko@aarchie SPECS]$
+
+
+===================
+
+# Global Defines
+//CMAKE FLAGS
+====================
+
+[ahkolodko@aarchie ~]$ mock blender-2.79-1.fc27.src.rpm ~/
+ERROR: Must specify --resultdir when building multiple RPMS.
+
++ cd /builddir/build/BUILD
++ cd blender-2.79
++ /usr/bin/rm -rf /builddir/build/BUILDROOT/blender-2.79-1.fc27.aarch64
++ exit 0
+Finish: rpmbuild blender-2.79-1.fc27.src.rpm
+Finish: build phase for blender-2.79-1.fc27.src.rpm
+INFO: Done(blender-2.79-1.fc27.src.rpm) Config(default) 27 minutes 24 seconds
+INFO: Results and/or logs in: /var/lib/mock/fedora-27-aarch64/result
+Finish: run
+[ahkolodko@aarchie ~]$
+
+[ahkolodko@aarchie ~]$ rpm -i blender-2.79-1.fc27.src.rpm --prefix ~/rpm
+
+/usr/bin/make -f source/creator/CMakeFiles/blender_man_page.dir/build.make source/                                                                                      creator/CMakeFiles/blender_man_page.dir/build
+make[2]: Entering directory '/home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-mak                                                                                      e'
+cd /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/source/creator && ../../                                                                                      ../doc/manpage/blender.1.py /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make                                                                                      /bin/blender /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/source/creator                                                                                      /blender.1
+  executing: /home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make/bin/blender --                                                                                      help
+Traceback (most recent call last):
+  File "../../../doc/manpage/blender.1.py", line 54, in <module>
+    blender_help = subprocess.check_output(cmd).decode(encoding="utf-8")
+  File "/usr/lib64/python3.6/subprocess.py", line 336, in check_output
+    **kwargs).stdout
+  File "/usr/lib64/python3.6/subprocess.py", line 418, in run
+    output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/home/ahkolodko/rpmbuild/BUILD/blender-2                                                                                      .79/cmake-make/bin/blender', '--help']' died with <Signals.SIGSEGV: 11>.
+make[2]: *** [source/creator/CMakeFiles/blender_man_page.dir/build.make:60: source                                                                                      /creator/CMakeFiles/blender_man_page] Error 1
+make[2]: Leaving directory '/home/ahkolodko/rpmbuild/BUILD/blender-2.79/cmake-make                                                                                      '
+make[1]: *** [CMakeFiles/Makefile2:7417: source/creator/CMakeFiles/blender_man_pag                                                                                      e.dir/all] Error 2
+make: *** [Makefile:166: all] Error 2
+error: Bad exit status from /var/tmp/rpm-tmp.E8a5QT (%build)
+
+
+RPM build errors:
+    Bad exit status from /var/tmp/rpm-tmp.E8a5QT (%build)
+[ahkolodko@aarchie SPECS]$
+
+Moving to bbetty
+
+
+dnf download --source blender
+rpm -i blender-2.79-1.fc27.src.rpm
+rpmbuild -ba blender.spec //fail
+sudo dnf builddep blender.spec
+rpmbuild -ba blender.spec
+
+//seems to have worked
+
+export CXXFLAGS="$CXXFLAGS -mno-altivec" CFLAGS="%{-pg}"
+
+gcc -Q --help=Optimizers
+sdiff myO2 myO3
+
+export CXXFLAGS="%{optflags}" CFLAGS="%{optflags}"
+
+find unknown flag change with git
+git init
+git add *
+git commit -am "initial commit"
+=====make change
+git add *
+git commit -am "made change"
+git format-patch HEAD^1
+
+copy -r to temp
+===make change
+diff -r file1 file2 > output
+
+//can also use strace, very powerful

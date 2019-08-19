@@ -1,0 +1,15 @@
+12% ccl::kernel_cpu_avx2_filter_nlm_construct_gramian(int, int, float*, float*, float*, int*, float*, ccl::float3*, int*, int*, int, int, int)
+
+./blender_profile/intern/cycles/kernel/CMakeFiles/cycles_kernel.dir/kernels/cpu/filter_avx2.cpp.o
+./blender_profile/intern/cycles/device/CMakeFiles/cycles_device.dir/device_cpu.cpp.o
+./blender_profile/bin/test1.txt
+./blender_profile/bin/blender
+./blender_profile/lib/libcycles_kernel.a
+./blender_profile/lib/libcycles_device.a
+./build_linux/intern/cycles/kernel/CMakeFiles/cycles_kernel.dir/kernels/cpu/filter_avx2.cpp.o
+./build_linux/intern/cycles/device/CMakeFiles/cycles_device.dir/device_cpu.cpp.o
+./build_linux/bin/blender
+./build_linux/lib/libcycles_kernel.a
+./build_linux/lib/libcycles_device.a
+./notes/functions.txt
+

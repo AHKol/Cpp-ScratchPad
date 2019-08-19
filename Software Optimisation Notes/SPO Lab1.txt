@@ -1,0 +1,27 @@
+Select any two open source software packages that have different licenses.
+--Research the procedure used by those projects to accept code ("patches") from contributors. This may be through a mailing list, bug tracker, or source code management system (SCMS)/version control system (VCS) such as Mercurial, Bazaar, or Git/GitHub.
+--Identify one software change ("patch") successfully submitted in each community, and observe the entire review process from start to finish. Note how many people were involved in the review, the role of those people in the community and project, how long the whole review took, how responsive the participants were to updates in the process, what kinds of issues were discussed, and how issues were resolved.
+--Write a blog post discussing your findings. Explain how each community's review process works, the reasons for what you've observed, and note the advantages and disadvantages of each approach. Consider what you personally would have to do and learn in order to successfully submit a patch to each community.
+
+
+INCLUDE OS: Apache License 2.0
+GitHub, most work done by the HiOA team, pull requests go to project dev branch, one user performs tests and approves/rejects request.
+Issue posted on github issue tracker Feb 15th, 'AndreasAakesson' picked up request Feb 16th, 5 commits later pushed it to dev build run by 'fwsGonzo', same day 13 possibly automated tests were performed and pull request was accepted. 
+Solved Mac OS & URI issues #1167 https://github.com/hioa-cs/IncludeOS/pull/1167
+
+
+LibreOffice: Mozilla Public License, v. 2.0.
+Gerrit, a wiki with introductory guidelines is avalable, contributers are recomended contributing to simple issues then moving up to more difficult issues
+Small patch verified that can be built by bot, then verified by human. 
+Now preview appear on right https://gerrit.libreoffice.org/#/c/48536/
+
+==Draft==
+As an introduction to open source software development, my first SPO lab has me compare the methodology of two different open source projects. My choice was a popular project 'LibreOffice' and a somewhat obscure project, 'IncludeOS'. Comparison includes what SCMS is used, an example of a patch being implemented, including purpose of the patch and the review process.
+
+IncludeOS
+A research project intended to combine application and operating system on x86 devices written primarily in c++. Using github, most of the work is done by project members. A pull requests are performed through the dev branch and one member performs automated tests and approves or rejects the code.
+Example issue, 'Apple nasm (old) used on Mac OS Sierra #1155' https://github.com/hioa-cs/IncludeOS/pull/1167. Issue was posted on github tracker February 15th, 'AndreasAakesson' picked up request Feb 16th, 5 commits later pushed it to dev build run by 'fwsGonzo', same day 13 possibly automated tests were performed and pull request was accepted.
+
+LibreOffice
+An open source alternative to Microsoft Office. Uses gerrit as it's SCMS, you can find an issues list on Bugzilla with the wiki having a list of bugs labeled as easy and sorted by language. Contributions are are tested automatically and reviewed by 2 humans.
+Example issue, 'TOC: Include preview on the right' https://gerrit.libreoffice.org/#/c/48536/. Issue was posted in Bugzilla on January 24th, 'Kshitij Pathania' uploaded the patch that same day. Reviews were completed January 25th, closing the issue.

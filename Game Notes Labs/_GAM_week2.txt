@@ -1,0 +1,23 @@
+World coordinate system: Every vector written in world
+Local coordinate system: Every vector is written based on object
+
+Transformation:
+-Scale
+-Rotate
+-Translate
+
+Homogeneous transform matrix
+
+Libraries for matrix math:
+-GLM, What we use
+-VGL, Stuck if chosen
+
+GLSL: Pipeline between VRAM and GPU
+-Contains 5 shader options
+
+1. Vertex operations: multiply every coordinate by the homogeneous matrix
+2. Primitive assembly: Connect all the verticies
+3. Calling fraston: Disregard all invisible verticies
+4. Projection: convert to 2d
+5. Coloring: 
+

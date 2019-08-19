@@ -1,0 +1,30 @@
+Talk about picking blender
+C, im good at C
+Aware of cpu intensiveness
+close arm integration would be valuble if arm server cpus become popular
+lots of code to parse available
+Due to the CPU intensiveness the code is likely to be optimised for specific architectures
+
+Talk about installing onto archiee
+Cannot use xforwarding
+Needed to use python script.
+Installations needed sudo access and files can go anywhere
+Will install requirements from dnf
+aarchie wouldn't be able to display to windows
+
+Talk about installing linux on HDD
+
+Talk about getting profile on laptop working
+
+Talk about getting profile working on aarchie
+
+Talk about what functions are most usefull for optimization
+
+Talk about optimization strategy
+
+Talk about optimization of specific code %speed increase
+
+Talk about community engagement
+
+Talk about sending patch
+

@@ -1,0 +1,134 @@
+GPU610 Lab 5
+Adam Kolodko
+ahkolodko@myseneca.ca
+
+// w5.cu
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <chrono>
+#include <cstdlib>
+#include <algorithm>
+
+#include <cuda_runtime.h>
+#include <thrust\host_vector.h>
+#include <thrust\device_vector.h>
+#include <thrust\generate.h>
+#include <thrust\functional.h>
+#include <thrust\copy.h>
+#include <thrust\sort.h>
+using namespace std::chrono;
+
+// report system time
+void reportTime(const char* msg, steady_clock::duration span) {
+	auto ms = duration_cast<milliseconds>(span);
+	std::cout << msg << " - took - " <<
+		ms.count() << " millisecs" << std::endl;
+}
+
+// Square Function Object
+class square {
+public:
+	__host__ __device__ float operator()(float input){
+		return input * input;
+	}
+};
+
+// magnitude
+float magnitude(thrust::host_vector<float>* h_v, int n) {
+	float result;
+
+	thrust::device_vector<float> d_v = *h_v;
+
+	//Thrust calls
+	thrust::transform(d_v.begin(), d_v.end(), d_v.begin(), square());
+	result = thrust::reduce(d_v.begin(), d_v.end());
+
+	//fused
+	//result = thrust::transform_reduce(d_v.begin(), d_v.end(), square(), 0.0, thrust::plus<float>());
+	return result;
+}
+
+int main(int argc, char** argv) {
+	if (argc != 2) {
+		std::cerr << argv[0] << ": invalid number of arguments\n";
+		std::cerr << "Usage: " << argv[0] << "  size_of_vector\n";
+		return 1;
+	}
+	int n = std::atoi(argv[1]); // number of elements
+	steady_clock::time_point ts, te;
+
+	// Thrust definition of host vector
+	thrust::host_vector<float> h_v(n);
+
+	// initialize the host vector
+	ts = steady_clock::now();
+	std::generate(h_v.begin(), h_v.end(), std::rand);
+	te = steady_clock::now();
+	reportTime("initialization", te - ts);
+
+	// calculate the magnitude of the host vector
+	ts = steady_clock::now();
+	float len = magnitude(&h_v, n);
+	te = steady_clock::now();
+	reportTime("magnitude calculation", te - ts);
+
+	// display the magnitude
+	std::cout << std::fixed << std::setprecision(4);
+	std::cout << "Magnitude : " << len << std::endl;
+}
+
+==Outputs==
+
+==Fused==
+
+==5,000,000==
+initialization - took - 556 millisecs
+magnitude calculation - took - 601 millisecs
+Magnitude : 1790281418539008.0000
+Press any key to continue . . .
+
+==10,000,000==
+initialization - took - 1115 millisecs
+magnitude calculation - took - 797 millisecs
+Magnitude : 3578665266839552.0000
+Press any key to continue . . .
+
+==15,000,000==
+initialization - took - 1675 millisecs
+magnitude calculation - took - 967 millisecs
+Magnitude : 5368463233122304.0000
+Press any key to continue . . .
+
+==20,000,000==
+initialization - took - 2200 millisecs
+magnitude calculation - took - 1113 millisecs
+Magnitude : 7159120998170624.0000
+Press any key to continue . . .
+
+==Two Part==
+
+==5,000,000==
+initialization - took - 560 millisecs
+magnitude calculation - took - 962 millisecs
+Magnitude : 1790281418539008.0000
+Press any key to continue . . .
+
+==10,000,000==
+initialization - took - 1116 millisecs
+magnitude calculation - took - 1519 millisecs
+Magnitude : 3578665266839552.0000
+Press any key to continue . . .
+
+==15,000,000==
+initialization - took - 1667 millisecs
+magnitude calculation - took - 2065 millisecs
+Magnitude : 5368463233122304.0000
+Press any key to continue . . .
+
+==20,000,000==
+initialization - took - 2231 millisecs
+magnitude calculation - took - 2602 millisecs
+Magnitude : 7159120998170624.0000
+Press any key to continue . . .

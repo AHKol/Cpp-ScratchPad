@@ -1,0 +1,18 @@
+﻿  main.cpp
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(41): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(220): warning C4244: '=': conversion from 'double' to 'GLuint', possible loss of data
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(221): warning C4244: '=': conversion from 'double' to 'GLuint', possible loss of data
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(222): warning C4244: '=': conversion from 'double' to 'GLuint', possible loss of data
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(225): warning C4244: '=': conversion from 'double' to 'GLuint', possible loss of data
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(226): warning C4244: '=': conversion from 'double' to 'GLuint', possible loss of data
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(227): warning C4244: '=': conversion from 'double' to 'GLuint', possible loss of data
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(253): warning C4018: '<': signed/unsigned mismatch
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(355): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(355): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(481): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(485): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(489): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(493): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(497): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\adam\desktop\gam_engine\firstexample\main.cpp(501): warning C4305: '-=': truncation from 'double' to 'float'
+  FirstExample.vcxproj -> C:\Users\Adam\Desktop\GAM_Engine\Debug\EngineOne.exe

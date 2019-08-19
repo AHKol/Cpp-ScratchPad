@@ -1,0 +1,58 @@
+solve AX=B with cuSolver //is the question
+
+qr decomposition with cusolver
+
+Read the paper
+Understand the math
+Watch the linear algebra lesson youtube
+
+Dense Linear Solver Reference
+
+============================================================================
+
+1/determinate * [cofators & Adjugate]
+
+LU Decomposition
+
+============================================================================
+
+Strategy
+
+AY 	-> dev 	S1
+A 	-> dev 	S2 	| Y -> test S1
+A	-> test S2	| Y -> Format Presentation
+
+============================================================================
+
+Monday
+show 2 solutions
+
+Questions, 
+Is there a findDeterminate() ?
+Is finding x enough
+	or is A ^-1 neccesary
+Is solution 1 worth exploring
+
+============================================================================
+
+CPU version of solver for 3 methods
+Cusolver tester of 3 methods, runtimes and size, dense/sparce
+
+//Presentation
+
+Explain inversion
+Explain sparce vs dense
+Explain 3 different methods (LU Decomp, QR Decomp, Choleski Decomp)
+-explain limitiations
+-Real world example
+
+A
+Write CPU code of 
+-Youtube V of Finding the Inverse of a Matrix 
+
+Y
+Test singleLU runtimes
+-with file
+Write doubleLU tester
+Write Tester for QR
+

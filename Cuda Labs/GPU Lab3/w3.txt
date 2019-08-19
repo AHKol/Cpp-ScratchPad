@@ -1,0 +1,127 @@
+GPU610 Lab 3
+Adam Kolodko
+ahkolodko@myseneca.ca
+
+//Device.exe output
+
+CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: "GeForce GTX 980"
+  CUDA Driver Version / Runtime Version          9.1 / 9.1
+  CUDA Capability Major/Minor version number:    5.2
+  Total amount of global memory:                 4096 MBytes (4294967296 bytes)
+  (16) Multiprocessors, (128) CUDA Cores/MP:     2048 CUDA Cores
+  GPU Max Clock rate:                            1216 MHz (1.22 GHz)
+  Memory Clock rate:                             3505 Mhz
+  Memory Bus Width:                              256-bit
+  L2 Cache Size:                                 2097152 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(65536), 2D=(65536, 65536), 3D=(4096, 4096, 4096)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(16384), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(16384, 16384), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 2 copy engine(s)
+  Run time limit on kernels:                     Yes
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  CUDA Device Driver Mode (TCC or WDDM):         WDDM (Windows Display Driver Model)
+  Device supports Unified Addressing (UVA):      Yes
+  Supports Cooperative Kernel Launch:            No
+  Supports MultiDevice Co-op Kernel Launch:      No
+  Device PCI Domain ID / Bus ID / location ID:   0 / 1 / 0
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 9.1, CUDA Runtime Version = 9.1, NumDevs = 1
+Result = PASS
+
+
+// Device Query and Selection - Workshop 3
+// w3.cpp
+
+#include <iostream>
+#include <cstdlib>
+#include <cstring>
+#include <cuda_runtime.h> // CUDA run-time header file
+
+void check(cudaError_t error ){
+	std::cerr << "***" << cudaGetErrorString(error) << "***\n";
+}
+
+int main(int argc, char** argv) {
+   bool selectADevice = argc == 3;
+   bool listAllDevices = argc == 1;
+   int rc = 0;
+
+   if (selectADevice) {
+      int device;
+      int major = std::atoi(argv[1]); // major version - compute capability 
+      int minor = std::atoi(argv[2]); // minor version - compute capability
+
+	  cudaError_t error;
+      cudaDeviceProp findProp;
+      findProp.major = major;
+      findProp.minor = minor;
+                                             // choose a device close to compute capability maj.min
+                                             // - fill the properties struct with the user-requested capability
+      cudaChooseDevice(&device, &findProp);  // - retrieve the device that is the closest match
+                                             // - retrieve the properties of the selected device
+
+      std::cout << "Device with compute capability " << major << '.' <<
+         minor << " found (index " << device << ')' << std::endl;
+   } else if (listAllDevices) {
+      int noDevices;
+
+      cudaGetDeviceCount(&noDevices);  // retrieve the number of installed devices
+
+      for (int device = 0; device < noDevices; ++device) {
+
+         error = cudaDeviceProp properties; // retrieve the properties of device i_dev
+		 if(error != cudaSuccess){
+		 check(error);
+		 }else {
+			 cudaGetDeviceProperties(&properties, device);
+
+			 std::cout << "Name:                " << properties.name
+				<< std::endl;
+			 std::cout << "Compute Capability:  " << properties.major
+				<< '.' << properties.minor
+				<< std::endl;
+			 std::cout << "Total Global Memory: " << properties.totalGlobalMem
+				<< std::endl;
+		}
+      }
+      if (noDevices == 0) {
+         std::cout << "No Device found " << std::endl;
+      }
+   } else {
+      std::cout << "***Incorrect number of arguments***\n";
+      rc = 1;
+   }
+	check()
+   system("pause");
+   return rc;
+}
+
+
+//Output with 6 0
+Device with compute capability 6.0 found (index 0)
+Press any key to continue . . .
+
+//Output with no arguments
+Name:                GeForce GTX 980
+Compute Capability:  5.2
+Total Global Memory: 4294967296
+Press any key to continue . . .

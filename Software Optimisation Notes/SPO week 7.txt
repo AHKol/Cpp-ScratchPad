@@ -1,0 +1,18 @@
+Inline assembly 
+asm()
+asmVolatile() //volitile = dont touch between uses
+__asm__() //double _ _
+template : output : input : clobbers
+(assembler) : (conect c var to register) : 
+
+__asm__("mov %0, %1" : "=r(b)" : "r"(a) : )
+
+==Debuger==
+gdb debugger for linux
+
+Possible candidates
+Gimp
+Blender
+Image editors/3d renderers
+
+Look for x86 specific optimisers, and empty arch64 optimizer

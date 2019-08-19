@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="SOIL">
+      <UniqueIdentifier>{e4a2a855-a953-4ea6-82d2-e798f82f2a2d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SOIL\src\SOIL.c">
+      <Filter>SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SOIL\src\stb_image_aug.c">
+      <Filter>SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SOIL\src\image_DXT.c">
+      <Filter>SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SOIL\src\image_helper.c">
+      <Filter>SOIL</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadShaders.cpp">
+      <Filter>SOIL</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="triangles.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="triangles.frag">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Dropbox\oglpg-8th-edition\include\LoadShaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Debug\stb_image_aug.obj">
+      <Filter>SOIL</Filter>
+    </Object>
+    <Object Include="Debug\SOIL.obj">
+      <Filter>SOIL</Filter>
+    </Object>
+    <Object Include="Debug\image_DXT.obj">
+      <Filter>SOIL</Filter>
+    </Object>
+    <Object Include="Debug\image_helper.obj">
+      <Filter>SOIL</Filter>
+    </Object>
+    <Object Include="Debug\LoadShaders.obj">
+      <Filter>SOIL</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\files\apple.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\files\Earth.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

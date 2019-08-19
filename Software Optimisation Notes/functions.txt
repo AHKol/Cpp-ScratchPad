@@ -1,0 +1,27 @@
+12% ccl::kernel_cpu_avx2_filter_nlm_construct_gramian(int, int, float*, float*, float*, int*, float*, ccl::float3*, int*, int*, int, int, int)
+
+11% ccl::kernel_filter_construct_transform(float const*, int, int, ccl::int4, int, float*, int*, int, float)
+
+8.53% ccl::kernel_cpu_avx2_filter_nlm_blur(float*, float*, int*, int, int)
+
+8.31% ccl::QBVH_bvh_intersect_hair(ccl::KernelGlobals*, ccl::Ray const*, ccl::Intersection*, unsigned int, unsigned int*, float, float)
+
+7.50% ccl::kernel_cpu_avx2_filter_nlm_calc_weight(float*, float*, int*, int, int)
+
+7.39% ccl::kernel_branched_path_trace(ccl::KernelGlobals*, float*, int, int, int, int, int)
+
+6.19% ccl::fast_exp2f(float)
+
+6.06% ccl::camera_sample_perspective(ccl::KernelGlobals*, float, float, float, float, ccl::Ray*)
+
+5.24% ccl::kernel_branched_path_integrate(ccl::KernelGlobals*, unsigned int, int, ccl::Ray, float*, ccl::PathRadiance*)
+
+5.01% ccl::kernel_cpu_avx2_filter_nlm_calc_difference(int, int, float*, float*, float*, int*, int, int, float, float)
+
+3.97% ccl::kernel_cpu_avx2_filter_nlm_update_output(int, int, float*, float*, float*, float*, int*, int, int)
+
+2.41% ccl::ShaderClosure::ShaderClosure()
+
+1.77% ccl::sobol_dimension(ccl::KernelGlobals*, int, int)
+
+1.36% ccl::svm_node_curves(ccl::KernelGlobals*, ccl::ShaderData*, float*, ccl::uint4, int*)

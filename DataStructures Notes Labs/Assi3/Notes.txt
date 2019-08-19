@@ -1,0 +1,5 @@
+'a'-'a' = 0 <- index
+'b'-'a' = 1
+Node* children[26];
+
+a* in trie means that a in this case is terminating

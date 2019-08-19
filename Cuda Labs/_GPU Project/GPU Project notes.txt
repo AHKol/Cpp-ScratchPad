@@ -1,0 +1,16 @@
+Make csv to json parser
+Make csv to yuri's format parser
+
+website
+Heroku basic webpage 
+data file
+Plotly.js
+
+read file
+parse json
+run display script
+
+Presentation========
+
+CPU is youtube lectures turned into code
+Slides Highlight blocks of code

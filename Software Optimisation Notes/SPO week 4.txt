@@ -1,0 +1,73 @@
+Last few years compilers became interesting/powerful
+
+Strength Reduction
+int x;
+for (x = 0; x < 10; x++;) {
+	printf("&d\n", x*6);
+}
+
+int x;
+for (x=0; x < 60; x += 6) {
+	printf("%d", x);
+}
+
+Hoisting
+int x, t;
+double c;
+t = readtemp();
+for (x = 0; x < 200; x++) {
+	foo (x,  (t-32)/1.8 + 273.15);
+}
+int x, t;
+double c;
+t = readtemp();
+c = (t-32)/1.8 + 273.15;
+for (x = 0; x < 200; x++) {
+	foo(x, c)
+}
+
+==ignore==
+Hoisting II
+int x, t;
+t = readtemp;
+double c;
+t = readtemp();
+c = (t-32)/1.8 + 273.15;
+for (x = 0; x < 200; x++) {
+	foo(x,(t-32)/1.8 + 273.15);
+}
+int x, t;
+t = readtemp;
+double c;
+t = readtemp();
+c = (t-32)/1.8 + 273.15;
+for (x = 0; x < 200; x++) {
+	foo(x,(t-32)/1.8 + 273.15);
+}
+==ignore==	
+
+MARKUP
+Mark constants
+Rearrange lines
+
+
+pointer
+pointerEnd
+while (pointer != pointerEnd) {
+	//do thing
+	pointer++;
+}
+
+==Friday==
+New optimizations
+PGO: Profile Guided Optimization
+LTO: Link time optimizations
+
+PGO build program once with 'optimization profiler', run application and profile how it was used, rebuild with optimizations
+
+LTO Make library larger but with more optimizations information
+
+
+==Lab==
+SAMPLES 50000000
+real    0m2.599s

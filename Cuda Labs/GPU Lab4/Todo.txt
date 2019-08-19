@@ -1,0 +1,9 @@
+Code custom cblas
+Run both versions
+Record outputs
+Save samples of outputs
+Make Chart
+Make txt
+Submit with thoughts
+
+Make note of lack of steady:clock on matrix and lack of cblas on Microsoft

@@ -1,0 +1,814 @@
+// Initialize Memory using a Kernel
+ // initialize.cu
+
+ #include <iostream>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ const int MAX_THREADS = 1024;
+
+ __global__ void initialize(float* a, float v) {
+     a[threadIdx.x] = v;
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 3) {
+         std::cerr << argv[0]
+                   << ": invalid no of arguments\n"
+                   << "Usage: " << argv[0]
+                   << "  no_of_elements initial_value\n"; 
+         return 1;
+     }
+     int n = std::atoi(argv[1]);
+     if (n > MAX_THREADS) n = MAX_THREADS;
+     float v = std::atof(argv[2]);
+
+     // allocate host memory
+     float* h_a = new float[n];
+     // allocate device memory
+     float* d_a;
+     cudaMalloc((void**)&d_a, n * sizeof(float));
+
+     // launch a grid of 1 block of n threads
+     initialize<<<1, n>>>(d_a, v);
+
+     // copy from device memory to host memory
+     cudaMemcpy(h_a, d_a, n * sizeof(float), cudaMemcpyDeviceToHost); 
+
+     // display contents of host memory
+     for (int i = 0; i < n; i++)
+         std::cout << h_a[i] << (i % 5 == 4 ? '\n' : ' ');
+     std::cout << std::endl;
+
+     // deallocate device memory
+     cudaFree(d_a);
+     // deallocate host memory
+     delete [] h_a;
+ }
+ 
+ // Synchronize the Host and Device for Error Handling
+ // sync.cu
+
+ #include <iostream>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ const int MAX_THREADS = 1024;
+
+ __global__ void initialize(float* a, float v) {
+     a[threadIdx.x] = v;
+ }
+
+ bool check(cudaError_t error) {
+     bool rc;
+     if (rc = (error != cudaSuccess)) {
+         std::cout << cudaGetErrorString(error) << std::endl;
+     }
+     return rc;
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 3) {
+         std::cerr << argv[0]
+                   << ": invalid no of arguments\n"
+                   << "Usage: " << argv[0]
+                   << "  no_of_elements initial_value\n"; 
+         return 1;
+     }
+     int   n = std::atoi(argv[1]);
+     if (n > MAX_THREADS) n = MAX_THREADS;
+     float v = std::atof(argv[2]);
+     float* d_a = nullptr;
+     float* h_a = new float[n];
+     cudaMalloc((void**)&d_a, n * sizeof(float));
+
+     // initialize error code
+     cudaError_t error = cudaGetLastError(); 
+
+     // launch a grid of n threads
+     initialize<<<1, n>>>(d_a, v);
+
+     // synchronize the device and the host
+     cudaDeviceSynchronize();
+
+     // extract error code for the kernel's execution
+     if(cudaGetLastError()) {
+         cudaFree(d_a);
+         delete [] h_a;
+         return 3;
+     }
+
+     if(cudaMemcpy(h_a, d_a, n * sizeof(float), cudaMemcpyDeviceToHost)) {
+         cudaFree(d_a);
+         delete [] h_a;
+         return 4;
+     }
+
+     // output for correctness check
+     for (int i = 0; i < n; i++)
+         std::cout << h_a[i] << (i % 5 == 4 ? '\n' : ' ');
+     std::cout << std::endl;
+
+     cudaFree(d_a);
+     delete [] h_a;
+ }
+ 
+ // Initialize a Tiny Vector using a Kernel
+ // tiny_vector.cu
+
+ #include <iostream>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+
+ __global__ void initialize(float* a, float v) {
+     int idx = threadIdx.x;
+     a[idx] = v;
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 3) {
+         std::cerr << "***Incorrect number of arguments***\n";
+         return 1;
+     }
+     unsigned n = atoi(argv[1]);
+     float v = atof(argv[2]);
+     int   d;
+     cudaDeviceProp prop;
+     cudaGetDevice(&d);
+     cudaGetDeviceProperties(&prop, d);
+     unsigned n_max = prop.maxThreadsDim[0];
+     if (n > n_max) {
+        n = n_max;
+        std::cout << "n reduced to " << n << std::endl;
+     }
+
+     float* d_a;
+     float* h_a = new float[n];
+     cudaMalloc((void**)&d_a, n * sizeof(float));
+
+     // launch a grid of 1 block of n threads
+     initialize<<<1, n>>>(d_a, v);
+
+     // copy from device to host memory
+     cudaMemcpy(h_a, d_a, n * sizeof(float), cudaMemcpyDeviceToHost); 
+
+     // output for correctness check
+     std::cout << h_a[0] << " ... " << h_a[n - 1] << std::endl;
+     cudaFree(d_a);
+     delete [] h_a;
+ }
+ 
+ // Initialize Memory using a Kernel - Two-Dimensional Data
+ // matrix_thread_id.cu
+
+ #include <iostream>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+
+ const unsigned ntpb = 32;
+
+ __global__ void initialize(float* a, float v, int n) {
+     int i = blockIdx.x * blockDim.x + threadIdx.x;
+     int j = blockIdx.y * blockDim.y + threadIdx.y;
+     if (i < n && j < n)
+         a[j * n + i] = v;
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 3) {
+         std::cerr << "***Incorrect number of arguments***\n";
+         return 1;
+     }
+     unsigned n = atoi(argv[1]);
+     float v = atof(argv[2]);
+
+     int nb = (n + ntpb - 1) / ntpb;
+     std::cout << "n = " << n << ", No of Blocks = " << nb
+      << ", No of Threads Per Block = " << ntpb << std::endl;
+
+     float* d_a = nullptr;
+     cudaMalloc((void**)&d_a, n * n * sizeof(float));
+     if (!d_a) {
+         std::cerr << "***Out of Memory***\n";
+         return 2;
+     }
+     float* h_a = new float[n * n];
+
+     // launch
+     dim3 dGrid(nb, nb, 1);
+     dim3 dBlock(ntpb, ntpb, 1);
+     initialize<<<dGrid, dBlock>>>(d_a, v, n);
+
+     // copy from device to host memory
+     cudaMemcpy(h_a, d_a, n * n * sizeof(float), cudaMemcpyDeviceToHost); 
+
+     // check correctness
+     for (int i = 0; i < n * n; i++)
+         if (h_a[i] != v) std::cout << h_a[i] << "" << v << std::endl;
+     std::cout << "done" <<std::endl;
+
+     cudaFree(d_a);
+     delete [] h_a;
+     cudaDeviceReset();
+ }
+ 
+  // Thread Divergence
+ // divergence.cu
+
+ #include <iostream>
+ #include <iomanip>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ // to remove intellisense highlighting
+ #include <device_launch_parameters.h>
+ #ifndef __CUDACC__
+ #define __CUDACC__
+ #endif
+ #include <device_functions.h>
+
+ const int ntpb = 512;
+
+ __global__ void reduce(float* a, float* b) {
+     int i = blockIdx.x * blockDim.x + threadIdx.x;
+     int t = threadIdx.x;
+     __shared__ float s[ntpb];
+     s[t] = a[i];
+     __syncthreads();
+
+
+     for (int stride = 1; stride < blockDim.x; stride <<= 1) {
+         if (t % (2 * stride) == 0)
+             s[t] += s[t + stride];
+         __syncthreads();
+     }
+
+     if (t == 0)
+         b[blockIdx.x] = s[0];
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 2) {
+         std::cerr << argv[0]
+             << ": invalid no of arguments\n"
+             << "Usage: " << argv[0]
+             << "  no_of_elements\n";
+         return 1;
+     }
+     int   n = atoi(argv[1]);
+     // determine the number of blocks required
+     int nblks = (n + ntpb - 1) / ntpb;
+
+     // allocate host memory
+     float* h_a = new float[nblks * ntpb];
+     float* h_b = new float[nblks];
+     // initialize host memory
+     for (int i = 0; i < n; i++)
+         h_a[i] = float(std::rand()) / RAND_MAX;
+     for (int i = n; i < nblks * ntpb; i++)
+         h_a[i] = 0.0f;
+     float h_sum = 0.0f;
+     for (int i = 0; i < n; i++)
+         h_sum += h_a[i];
+
+     // allocate device memory
+     float* d_a; // full device vector
+     float* d_b; // device sum per block
+     cudaMalloc((void**)&d_a, nblks * ntpb * sizeof(float));
+     cudaMalloc((void**)&d_b, nblks * sizeof(float));
+     cudaMemcpy(d_a, h_a, nblks * ntpb * sizeof(float), cudaMemcpyHostToDevice); 
+
+     // reduce to partial sums
+     reduce << <nblks, ntpb >> >(d_a, d_b);
+
+     // copy from device to host memory
+     cudaMemcpy(h_b, d_b, nblks * sizeof(float), cudaMemcpyDeviceToHost);
+     float d_sum = 0.0f;
+     for (int i = 0; i < nblks; i++)
+         d_sum += h_b[i];
+
+     // report sums
+     std::cout << std::fixed << std::setprecision(1);
+     std::cout << "Host sum   = " << h_sum << std::endl;
+     std::cout << "Device sum = " << d_sum << std::endl;
+
+     // deallocate memory
+     delete[] h_a;
+     delete[] h_b;
+     cudaFree(d_a);
+     cudaFree(d_b);
+ } 
+ 
+  // Less Thread Divergence
+ // less_divergence.cu
+
+ #include <iostream>
+ #include <iomanip>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ // to remove intellisense highlighting
+ #include <device_launch_parameters.h>
+ #ifndef __CUDACC__
+ #define __CUDACC__
+ #endif
+ #include <device_functions.h>
+
+ const int ntpb = 512;
+
+ __global__ void reduce(float* a, float* b) {
+     int i = blockIdx.x * blockDim.x + threadIdx.x;
+     int t = threadIdx.x;
+     __shared__ float s[ntpb];
+     s[t] = a[i];
+     __syncthreads();
+
+
+     for (int stride = blockDim.x >> 1; stride > 0; stride >>= 1) {
+         if (t < stride)
+             s_c[t] += s_c[t + stride];
+         __syncthreads();
+     }
+
+     if (t == 0)
+         b[blockIdx.x] = s[0];
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 2) {
+         std::cerr << argv[0]
+             << ": invalid no of arguments\n"
+             << "Usage: " << argv[0]
+             << "  no_of_elements\n";
+         return 1;
+     }
+     int   n = atoi(argv[1]);
+     // determine the number of blocks required
+     int nblks = (n + ntpb - 1) / ntpb;
+
+     // allocate host memory
+     float* h_a = new float[nblks * ntpb];
+     float* h_b = new float[nblks];
+     // initialize host memory
+     for (int i = 0; i < n; i++)
+         h_a[i] = float(std::rand()) / RAND_MAX;
+     for (int i = n; i < nblks * ntpb; i++)
+         h_a[i] = 0.0f;
+     float h_sum = 0.0f;
+     for (int i = 0; i < n; i++)
+         h_sum += h_a[i];
+
+     // allocate device memory
+     float* d_a; // full device vector
+     float* d_b; // device sum per block
+     cudaMalloc((void**)&d_a, nblks * ntpb * sizeof(float));
+     cudaMalloc((void**)&d_b, nblks * sizeof(float));
+     cudaMemcpy(d_a, h_a, nblks * ntpb * sizeof(float), cudaMemcpyHostToDevice); 
+
+     // reduce to partial sums
+     reduce << <nblks, ntpb >> >(d_a, d_b);
+
+     // copy from device to host memory
+     cudaMemcpy(h_b, d_b, nblks * sizeof(float), cudaMemcpyDeviceToHost);
+     float d_sum = 0.0f;
+     for (int i = 0; i < nblks; i++)
+         d_sum += h_b[i];
+
+     // report sums
+     std::cout << std::fixed << std::setprecision(1);
+     std::cout << "Host sum   = " << h_sum << std::endl;
+     std::cout << "Device sum = " << d_sum << std::endl;
+
+     // deallocate memory
+     delete[] h_a;
+     delete[] h_b;
+     cudaFree(d_a);
+     cudaFree(d_b);
+ } 
+ 
+ // Sum a Small-Sized Vector
+ // small_reduction.cu
+
+ #include <iostream>
+ #include <iomanip>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ // to remove intellisense highlighting
+ #include <device_launch_parameters.h>
+ #ifndef __CUDACC__
+ #define __CUDACC__
+ #endif
+ #include <device_functions.h>
+
+ __global__ void reduce(float* a, int n) {
+     int i = threadIdx.x;
+
+     for (int stride = 1; i + stride < n; stride <<= 1) {
+         if (i % (2 * stride) == 0)
+             a[i] += a[i + stride];
+         __syncthreads();
+     }
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 2) {
+         std::cerr << argv[0]
+             << ": invalid no of arguments\n"
+             << "Usage: " << argv[0]
+             << "  no_of_elements\n";
+         return 1;
+     }
+     int   n = atoi(argv[1]);
+
+     // allocate host memory
+     float* h_a = new float[n];
+     // initialize host memory
+     for (int i = 0; i < n; i++)
+         h_a[i] = float(std::rand()) / RAND_MAX;
+     float h_sum = 0.0f;
+     for (int i = 0; i < n; i++)
+         h_sum += h_a[i];
+
+     // allocate device memory
+     float* d_a; // full device vector
+     cudaMalloc((void**)&d_a, n * sizeof(float));
+     cudaMemcpy(d_a, h_a, n * sizeof(float), cudaMemcpyHostToDevice);
+
+     // reduce to partial sums
+     reduce << <1, n >> >(d_a, n);
+
+     // copy from device to host memory
+     float d_sum;
+     cudaMemcpy(&d_sum, d_a, sizeof(float), cudaMemcpyDeviceToHost);
+
+     // report sums
+     std::cout << std::fixed << std::setprecision(1);
+     std::cout << "Host sum   = " << h_sum << std::endl;
+     std::cout << "Device sum = " << d_sum << std::endl;
+
+     // deallocate memory
+     delete[] h_a;
+     cudaFree(d_a);
+ }
+ 
+ // Sum a Medium-Sized Vector
+ // medium_reduction.cu
+
+ #include <iostream>
+ #include <iomanip>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ // to remove intellisense highlighting
+ #include <device_launch_parameters.h>
+ #ifndef __CUDACC__
+ #define __CUDACC__
+ #endif
+ #include <device_functions.h>
+
+ const int ntpb = 512;
+
+ __global__ void reduce(float* a, float* b, int n) {
+     int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+     for (int stride = 1; stride < ntpb; stride <<= 1) {
+         if (i % (2 * stride) == 0)
+             a[i] += a[i + stride];
+         __syncthreads();
+     }
+     if (threadIdx.x == 0)
+         b[blockIdx.x] = a[i];
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 2) {
+         std::cerr << argv[0]
+             << ": invalid no of arguments\n"
+             << "Usage: " << argv[0]
+             << "  no_of_elements\n";
+         return 1;
+     }
+     int   n = atoi(argv[1]);
+     // determine the number of blocks required
+     int nblks = (n + ntpb - 1) / ntpb;
+
+     // allocate host memory
+     float* h_a = new float[nblks * ntpb];
+     float* h_b = new float[nblks];
+     // initialize host memory
+     for (int i = 0; i < n; i++)
+         h_a[i] = float(std::rand()) / RAND_MAX;
+     for (int i = n; i < nblks * ntpb; i++)
+         h_a[i] = 0.0f;
+     float h_sum = 0.0f;
+     for (int i = 0; i < n; i++)
+         h_sum += h_a[i];
+
+     // allocate device memory
+     float* d_a; // full device vector
+     float* d_b; // device sum per block
+     cudaMalloc((void**)&d_a, nblks * ntpb * sizeof(float));
+     cudaMalloc((void**)&d_b, nblks * sizeof(float));
+     cudaMemcpy(d_a, h_a, nblks * ntpb * sizeof(float), cudaMemcpyHostToDevice); 
+
+     // reduce to partial sums
+     reduce << <nblks, ntpb >> >(d_a, d_b, n);
+
+     // copy from device to host memory
+     cudaMemcpy(h_b, d_b, nblks * sizeof(float), cudaMemcpyDeviceToHost);
+     float d_sum = 0.0f;
+     for (int i = 0; i < nblks; i++)
+         d_sum += h_b[i];
+
+     // report sums
+     std::cout << std::fixed << std::setprecision(1);
+     std::cout << "Host sum   = " << h_sum << std::endl;
+     std::cout << "Device sum = " << d_sum << std::endl;
+
+     // deallocate memory
+     delete[] h_a;
+     delete[] h_b;
+     cudaFree(d_a);
+     cudaFree(d_b);
+ }
+ 
+ // Sum a Medium-Sized Vector
+ // shared_reduction.cu
+
+ #include <iostream>
+ #include <iomanip>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ // to remove intellisense highlighting
+ #include <device_launch_parameters.h>
+ #ifndef __CUDACC__
+ #define __CUDACC__
+ #endif
+ #include <device_functions.h>
+
+ const int ntpb = 512;
+
+ __global__ void reduce(float* a, float* b, int n) {
+     int i = blockIdx.x * blockDim.x + threadIdx.x;
+     int t = threadIdx.x;
+     __shared__ float s[ntpb];
+     s[t] = a[i];
+     __syncthreads();
+     
+
+     for (int stride = 1; stride < blockDim.x; stride <<= 1) {
+         if (t % (2 * stride) == 0)
+             s[t] += s[t + stride];
+         __syncthreads();
+     }
+     if (t == 0)
+         b[blockIdx.x] = s[0];
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 2) {
+         std::cerr << argv[0]
+             << ": invalid no of arguments\n"
+             << "Usage: " << argv[0]
+             << "  no_of_elements\n";
+         return 1;
+     }
+     int   n = atoi(argv[1]);
+     // determine the number of blocks required
+     int nblks = (n + ntpb - 1) / ntpb;
+
+     // allocate host memory
+     float* h_a = new float[nblks * ntpb];
+     float* h_b = new float[nblks];
+     // initialize host memory
+     for (int i = 0; i < n; i++)
+         h_a[i] = float(std::rand()) / RAND_MAX;
+     for (int i = n; i < nblks * ntpb; i++)
+         h_a[i] = 0.0f;
+     float h_sum = 0.0f;
+     for (int i = 0; i < n; i++)
+         h_sum += h_a[i];
+
+     // allocate device memory
+     float* d_a; // full device vector
+     float* d_b; // device sum per block
+     cudaMalloc((void**)&d_a, nblks * ntpb * sizeof(float));
+     cudaMalloc((void**)&d_b, nblks * sizeof(float));
+     cudaMemcpy(d_a, h_a, nblks * ntpb * sizeof(float), cudaMemcpyHostToDevice);
+
+     // reduce to partial sums
+     reduce << <nblks, ntpb >> >(d_a, d_b, n);
+
+     // copy from device to host memory
+     cudaMemcpy(h_b, d_b, nblks * sizeof(float), cudaMemcpyDeviceToHost);
+     float d_sum = 0.0f;
+     for (int i = 0; i < nblks; i++)
+         d_sum += h_b[i];
+
+     // report sums
+     std::cout << std::fixed << std::setprecision(1);
+     std::cout << "Host sum   = " << h_sum << std::endl;
+     std::cout << "Device sum = " << d_sum << std::endl;
+
+     // deallocate memory
+     delete[] h_a;
+     delete[] h_b;
+     cudaFree(d_a);
+     cudaFree(d_b);
+ } 
+ 
+ // Visible Spheres - after Sanders and Kandrot CUDA by Example
+ // raytrace.cu
+
+ #include <iostream>
+ #include <cmath>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ // to remove intellisense highlighting
+ #include <device_launch_parameters.h>
+ #ifndef __CUDACC__
+ #define __CUDACC__
+ #endif
+ #include <device_functions.h>
+
+ #define DIM 64
+ #define DIMDIM (DIM * DIM)
+ #define NTPB 16
+ #define M_SPHERES 500
+ #define RADIUS DIM / 10.0f
+ #define MIN_RADIUS 2.0f
+ #define rnd(x) ((float) (x) * rand() / RAND_MAX)
+ #define INF 2e10f
+
+ class Sphere {
+     float x, y, z, r;
+   public:
+     Sphere() {}
+     void init() {
+         x = rnd(DIM) - DIM / 2.0f;
+         y = rnd(DIM) - DIM / 2.0f;
+         z = rnd(DIM) - DIM / 2.0f;
+         r = rnd(RADIUS) + MIN_RADIUS;
+     }
+     __device__ float hit(float ox, float oy) {
+         float dx = ox - x;
+         float dy = oy - y;
+         if (dx * dx + dy * dy < r * r)
+             return sqrtf(r * r - dx * dx - dy * dy) + z;
+         else
+             return -INF;
+     }
+ };
+
+ __constant__ Sphere s[M_SPHERES];
+
+ __global__ void raytrace(bool* a, int n) {
+     int x = threadIdx.x + blockIdx.x * blockDim.x;
+     int y = threadIdx.y + blockIdx.y * blockDim.y;
+     int k = x + y * blockDim.x * gridDim.x;
+     float ox = (x - DIM / 2);
+     float oy = (y - DIM / 2);
+     float mz = - INF;
+     for (int i = 0; i < n; i++) {
+         float t = s[i].hit(ox, oy);
+         if (t > mz)
+             mz = t;
+     }
+     a[k] = mz != - INF;
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc != 2) {
+         std::cerr << argv[0]
+                   << ": invalid no of arguments\n"
+                   << "Usage: " << argv[0]
+                   << "  no_of_spheres\n"; 
+         return 1;
+     }
+     int n = std::atoi(argv[1]);
+     if (n > M_SPHERES) n = M_SPHERES;
+
+     // create spheres and store in constant memory
+     Sphere* s_temp = new Sphere[n];
+     for (int i = 0; i < n; i++)
+         s_temp[i].init();
+     cudaMemcpyToSymbol(s, s_temp, sizeof(Sphere) * n);
+     delete [] s_temp;
+
+     // allocate device memory for hit data
+     bool* d_a;
+     cudaMalloc((void**)&d_a, DIMDIM);
+
+     // launch the grid of threads
+     dim3 dimGrid(DIM/NTPB, DIM/NTPB);
+     dim3 dimBlock(NTPB, NTPB);
+     raytrace<<<dimGrid, dimBlock>>>(d_a, n);
+
+     // copy hit data to host
+     bool* h_a = new bool[DIMDIM];
+     cudaMemcpy(h_a, d_a, DIM*DIM, cudaMemcpyDeviceToHost);
+
+     // display results
+     int k = 0;
+     for (int i = 0; i < DIM; i++) {
+         for (int j = 0; j < DIM; j++)
+             std::cout << (h_a[k++] ? 'x' : ' ');
+         std::cout << std::endl;
+     }
+
+     // clean up
+     delete [] h_a;
+     cudaFree(d_a);
+ }
+ 
+  // Matrix Multiplication - Naive Version
+ // matMul_0.cu
+
+ #include <iostream>
+ #include <iomanip>
+ #include <cstdlib>
+ #include <cuda_runtime.h>
+ #include "device_launch_parameters.h" // intellisense on CUDA syntax
+
+ const int ntpb = 32;
+
+ __global__ void matMul(const float* d_a, const float* d_b, float* d_c,
+  int ni, int nj, int nk) {
+     int i = blockIdx.x * blockDim.x + threadIdx.x;
+     int j = blockIdx.y * blockDim.y + threadIdx.y;
+     if (i < ni && j < nj) {
+         float sum = 0.0f;
+         for (int k = 0; k < nk; k++)
+             sum += d_a[i * nk + k] * d_b[k * nj + j];
+         d_c[i * nj + j] = sum;
+     }
+ }
+
+ // display matrix a, which is stored in row-major order
+ //
+ void display(const char* str, const float* a, int ni, int nj) {
+     std::cout << str << std::endl;
+     for (int i = 0; i < ni; i++) {
+         for (int j = 0; j < nj; j++)
+             std::cout << std::setw(10) << a[i * nj + j];
+         std::cout << std::endl;
+     }
+     std::cout << std::endl;
+ }
+
+ int main(int argc, char* argv[]) {
+     if (argc < 4) {
+         std::cout << "Incorrect no of arguments" << std::endl;
+         return 1;
+     }
+     int m = atoi(argv[1]); // number of rows in A, C
+     int n = atoi(argv[2]); // number of columns in B, C
+     int k = atoi(argv[3]); // number of columns in A, rows in B
+     bool disp = argc == 5; // display results?
+     float* d_a;
+     float* d_b;
+     float* d_c;
+     float* h_a = new float[m * k];
+     float* h_b = new float[k * n];
+     float* h_c = new float[m * n];
+     cudaMalloc((void**)&d_a, m * k * sizeof(float));
+     cudaMalloc((void**)&d_b, k * n * sizeof(float));
+     cudaMalloc((void**)&d_c, m * n * sizeof(float));
+
+     // initialize a[] and b[]
+     int kk = 0;
+     for (int i = 0; i < m; i++)
+         for (int j = 0; j < k; j++)
+             h_a[kk++] = (float)kk;
+     kk = 0;
+     for (int i = 0; i < k; i++)
+         for (int j = 0; j < n; j++)
+             h_b[kk++] = (float)kk;
+
+     // copy to the device
+     cudaMemcpy(d_a, h_a, m * k * sizeof(float), cudaMemcpyHostToDevice);
+     cudaMemcpy(d_b, h_b, k * n * sizeof(float), cudaMemcpyHostToDevice);
+
+     // launch grid
+     int nbx = (m + ntpb - 1) / ntpb;
+     int nby = (n + ntpb - 1) / ntpb;
+     dim3 dGrid(nbx, nby);
+     dim3 dBlock(ntpb, ntpb);
+     matMul<<<dGrid, dBlock>>>(d_a, d_b, d_c, m, n, k);
+
+     // copy from the device
+     cudaMemcpy(h_c, d_c, m * n * sizeof(float), cudaMemcpyDeviceToHost);
+
+     // display results
+     if (disp) {
+         std::cout << std::fixed << std::setprecision(4);
+         display("A :", h_a, m, k);
+         display("B :", h_b, k, n);
+         display("C = A B :", h_c, m, n);
+     }
+     std::cout << "done " << std::endl;
+
+     // deallocate
+     cudaFree(d_a);
+     cudaFree(d_b);
+     cudaFree(d_c);
+     delete [] h_a;
+     delete [] h_b;
+     delete [] h_c;
+     cudaDeviceReset();
+ }
